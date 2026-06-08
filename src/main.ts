@@ -1,5 +1,5 @@
 import "./style.css";
-import { WIDTH, HEIGHT, TILE_SIZE } from "./simulation/index.ts";
+import { WIDTH, HEIGHT, TILE_SIZE } from "./const.ts";
 import { Game } from "./game.ts";
 
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
