@@ -1,12 +1,5 @@
-import {
-  Elements,
-  World,
-  QWorld,
-  TILE_SIZE,
-  QUAD_DEPTH,
-  HEIGHT,
-  WIDTH,
-} from "./simulation/index.ts";
+import { Elements, World, QWorld } from "./simulation/index.ts";
+import { TILE_SIZE, QUAD_DEPTH, HEIGHT, WIDTH } from "./const.ts";
 import { MOTE_COLOR_MAP } from "./color-map.ts";
 import { Simulation } from "./simulation/simulation.ts";
 
