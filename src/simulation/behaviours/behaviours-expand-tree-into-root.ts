@@ -5,7 +5,7 @@ import { getCountsReducer } from "./utils";
 export const BehavioursExpandTreeIntoRoot: Behaviour[] = [
   {
     // has roots, not not too many, and a tree
-    condition: ({ values, counts }) =>
+    filter: ({ values, counts }) =>
       counts[Elements.ROOTS] > 0 &&
       counts[Elements.ROOTS] < values.length * 0.1 &&
       counts[Elements.TREE_STUMP] > 0,
@@ -28,7 +28,7 @@ export const BehavioursExpandTreeIntoRoot: Behaviour[] = [
   },
   {
     // has multiple roots and not too much tree
-    condition: ({ counts }) =>
+    filter: ({ counts }) =>
       counts[Elements.ROOTS] > 1 &&
       (counts[Elements.TREE_STUMP] == null || counts[Elements.TREE_STUMP] < 9),
     // roots become tree

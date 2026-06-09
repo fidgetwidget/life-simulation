@@ -3,8 +3,7 @@ import { Elements } from "../elements";
 
 export const GrowFlowersInFields: Behaviour = {
   // has enough grass
-  condition: ({ values, counts }) =>
-    counts[Elements.GRASS] > values.length * 0.25,
+  filter: ({ values, counts }) => counts[Elements.GRASS] > values.length * 0.25,
   // maybe grow a flower
   action: ({ world, chunk }) => {
     const grass = chunk.indexes.filter((i) => world.get(i) === Elements.GRASS);

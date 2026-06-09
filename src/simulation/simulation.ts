@@ -13,25 +13,25 @@ export class Simulation {
   }
 
   tick() {
-    const curChunk = this.qworld.root.chunks[this.curInx++];
+    const world = this.world;
+    const chunk = this.qworld.root.chunks[this.curInx++];
     if (this.curInx >= this.qworld.root.chunks.length) this.curInx = 0;
 
-    const values = curChunk.indexes.map((i) => this.world.get(i));
+    const values = chunk.indexes.map((i) => this.world.get(i));
     const counts = values.reduce((acc: Record<number, number>, cur: number) => {
       if (acc[cur] === undefined) acc[cur] = 0;
       acc[cur] += 1;
       return acc;
     }, {});
-    // test the values set for behaviours
-    // do those behaviours (set values on the world)
-    let didAction = false;
-    behaviours.forEach(({ condition, action }) => {
-      if (condition({ world: this.world, chunk: curChunk, values, counts })) {
-        didAction = true;
-        action({ world: this.world, chunk: curChunk });
-      }
-    });
 
-    return didAction ? curChunk : null;
+    // NOTE: This pattern is less efficient than doing the filtering and acting in one loop
+    //  but this is better for debugging.
+    // TODO: have a debug vs build version of this for speed reasons.
+    const actionable = behaviours.filter(({ filter }) =>
+      filter({ world, chunk, values, counts }),
+    );
+    actionable.forEach(({ action }) => action({ world, chunk }));
+
+    return actionable.length > 0 ? chunk : null;
   }
 }

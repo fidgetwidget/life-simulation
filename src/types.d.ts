@@ -14,19 +14,19 @@ type XY = {
   y: number;
 };
 
-type ConditionProps = {
+type BehaviourFilterProps = {
   world: World;
   chunk: Chunk;
   values: number[];
   counts: Record<Elements, number>;
 };
 
-type ActionProps = {
+type BehaviourActionProps = {
   world: World;
   chunk: Chunk;
 };
 
 type Behaviour = {
-  condition: (props: ConditionProps) => boolean;
-  action: (props: ActionProps) => void;
+  filter: (props: BehaviourFilterProps) => boolean;
+  action: (props: BehaviourActionProps) => void;
 };

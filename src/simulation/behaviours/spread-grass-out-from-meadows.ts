@@ -3,7 +3,7 @@ import { Elements } from "../elements";
 
 export const SpreadGrassOutFromMeadows: Behaviour = {
   // has a tree and enough grass
-  condition: ({ values, counts }) =>
+  filter: ({ values, counts }) =>
     values.includes(Elements.TREE_STUMP) &&
     counts[Elements.GRASS] > values.length * 0.25,
   // spread grass beyond the chunk

@@ -3,7 +3,7 @@ import { Elements } from "../elements";
 
 export const GrowGrassNearTrees: Behaviour = {
   // has trees
-  condition: ({ counts }) => counts[Elements.TREE_STUMP] > 0,
+  filter: ({ counts }) => counts[Elements.TREE_STUMP] > 0,
   // grow grass against the tree
   action: ({ world, chunk }) => {
     const trees = chunk.indexes.filter(

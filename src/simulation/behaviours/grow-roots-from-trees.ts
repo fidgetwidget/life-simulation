@@ -3,7 +3,7 @@ import { Elements } from "../elements";
 
 export const GrowRootsFromTrees: Behaviour = {
   // has multiple tree pieces and some grass
-  condition: ({ values, counts }) =>
+  filter: ({ values, counts }) =>
     counts[Elements.TREE_STUMP] > 1 &&
     counts[Elements.GRASS] > values.length * 0.2,
   // grow roots
