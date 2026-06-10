@@ -1,9 +1,9 @@
-import { Elements } from "./simulation/elements";
+import { Elements } from './simulation/elements';
 
-export const MOTE_COLOR_MAP = {
-  [Elements.EMPTY]: 0xefefde,
-  [Elements.TREE_STUMP]: 0x996600,
-  [Elements.GRASS]: 0x00cc66,
-  [Elements.FLOWERS]: 0xffff66,
-  [Elements.ROOTS]: 0x999966,
+export const MOTE_COLOR_MAP: Record<number, string> = {
+	[Elements.EMPTY]: '#fdebb6',
+	[Elements.TREE_STUMP]: '#756957',
+	[Elements.GRASS]: '#83a561',
+	[Elements.FLOWERS]: '#ffff66',
+	[Elements.ROOTS]: '#77745f',
 };
