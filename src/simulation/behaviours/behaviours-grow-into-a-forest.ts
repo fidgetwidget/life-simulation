@@ -1,10 +1,16 @@
-import { Elements } from "../elements";
+import { pickRandom } from '../../util';
+import { Elements } from '../elements';
 
 export const BehavioursGrowIntoAForest: Behaviour[] = [
   {
     // has lots of grass, but no tree, but neighbors a big tree
     filter: ({ values, counts, world, chunk }) => {
-      if (counts[Elements.GRASS] < values.length * 0.25) return false;
+      if (
+        counts[Elements.GRASS] == null ||
+        counts[Elements.GRASS] < values.length * 0.3 || // mostly grass
+        counts[Elements.TREE_STUMP] > 1 // no other trees
+      )
+        return false;
       const hasTreeNeighbors = chunk.neighbors.reduce((acc, cur) => {
         if (acc) return acc;
         const worldIndexes = chunk.root.chunks[cur].indexes;
@@ -17,6 +23,11 @@ export const BehavioursGrowIntoAForest: Behaviour[] = [
       }, false);
       return hasTreeNeighbors;
     },
-    action: () => null,
+    action: ({ world, chunk }) => {
+      const options = chunk.indexes.filter(
+        (i) => world.get(i) === Elements.GRASS,
+      );
+      world.set(pickRandom(options), Elements.TREE_STUMP);
+    },
   },
 ];

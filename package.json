@@ -11,8 +11,13 @@
   },
   "devDependencies": {
     "fps.ts": "^0.18.5",
+    "prettier": "^3.8.4",
     "typescript": "~6.0.2",
     "vite": "^8.0.12",
     "vitest": "^4.1.8"
+  },
+  "prettier": {
+    "trailingComma": "all",
+    "singleQuote": true
   }
 }
