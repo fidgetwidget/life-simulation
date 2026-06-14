@@ -50,14 +50,14 @@ export class Chunk {
       maxx = this.root.chunksWide - 1;
       maxy = this.root.chunksHigh - 1;
       const ncoords = getNeighbors(this.coord, maxx, maxy, 0, 0, false);
-      Logger.debug('Chunk:neighbors', {
-        maxx,
-        maxy,
-        i: this.index,
-        x: this.coord.x,
-        y: this.coord.y,
-        n: ncoords,
-      });
+      // Logger.debug('Chunk:neighbors', {
+      //   maxx,
+      //   maxy,
+      //   i: this.index,
+      //   x: this.coord.x,
+      //   y: this.coord.y,
+      //   n: ncoords,
+      // });
       this._ncoords = ncoords;
       this._neighbors = ncoords.map(
         (coord) => coord.y * this.root.chunksWide + coord.x,
@@ -68,8 +68,8 @@ export class Chunk {
 
   get coord(): XY {
     if (this._coord == null) {
-      const x = Math.floor(this.index % this.w);
-      const y = Math.floor(this.index / this.w);
+      const x = Math.floor(this.index % this.root.chunksWide);
+      const y = Math.floor(this.index / this.root.chunksWide);
       this._coord = {
         x,
         y,

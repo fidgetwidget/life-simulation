@@ -1,5 +1,5 @@
 import { Logger } from '../lib/Logger';
-import { Chunk } from './chunk';
+import { Chunk, ChunkFactory } from './chunk';
 
 export interface RootParams {
   x: number;
@@ -55,7 +55,7 @@ export class Root {
       throw new Error(
         `cannot divide into < 1 mote Width:${w} Height:${h} / ${quadLength}`,
       );
-    this.chunks = new Array(quadLength);
+    this.chunks = new Array(length);
     Logger.debug('Root:new', {
       x,
       y,
@@ -66,16 +66,37 @@ export class Root {
       quadLength,
     });
     // loop through the number of quad children it has and create the quad
-    for (let i = 0; i < length; i++) {
+    for (let index = 0; index < length; index++) {
       // Note: something about this is wrong, because it seems to only work right at certain depths...
-      const ix = Math.floor(i % this.chunksWide);
-      const iy = Math.floor(i / this.chunksWide);
-      const x = Math.floor(this.x + ix * this.chunkWidth);
-      const y = Math.floor(this.y + iy * this.chunkHeight);
-      const c = new Chunk(i, x, y, this.chunkWidth, this.chunkHeight, this);
-      c.forceCache();
+      const w = this.chunkWidth;
+      const h = this.chunkHeight;
+      const ix = Math.floor(index % this.chunksWide);
+      const iy = Math.floor(index / this.chunksWide);
+      const xoffset = Math.floor(ix * w);
+      const yoffset = Math.floor(iy * h);
+      const x = this.x + xoffset;
+      const y = this.y + yoffset;
+      // Logger.debug(`root:new chunk[${index}]`, {
+      //   ix,
+      //   iy,
+      //   xoffset,
+      //   yoffset,
+      //   x,
+      //   y,
+      //   w,
+      //   h,
+      // });
+      const c = ChunkFactory({
+        index,
+        x,
+        y,
+        w,
+        h,
+        root: this,
+      });
+      // c.forceCache();
 
-      this.chunks[i] = c;
+      this.chunks[index] = c;
     }
   }
 
