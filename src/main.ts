@@ -38,8 +38,11 @@ game.init();
 
 function render() {
   stats.begin();
-  game.update();
-  game.render();
+  if (!game.paused) {
+    game.update();
+    game.render();
+  }
+
   stats.end();
   requestAnimationFrame(render);
 }

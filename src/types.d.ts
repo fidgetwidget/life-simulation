@@ -1,6 +1,8 @@
-type World = import("./simulation/world").World;
-type Chunk = import("./simulation/chunk").Chunk;
-type Element = import("./simulation/elements").Elements;
+type World = import('./simulation/world').World;
+type Chunk = import('./simulation/chunk').Chunk;
+type Element = import('./simulation/elements').Elements;
+
+declare const __DEBUG__: boolean;
 
 type QuadData = {
   x: number;
