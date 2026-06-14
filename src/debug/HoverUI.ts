@@ -41,6 +41,7 @@ export class HoverUI {
     const wy = Math.floor(canvasy / TILE_SIZE);
     console.debug('HoverUi:handleMouseMove', { canvasx, canvasy, wx, wy });
     const chunk = this.qworld.getChunkAtWorld(wx, wy);
+
     this.updateChunk(chunk);
   }
 
@@ -94,7 +95,8 @@ export class HoverUI {
                 <ul class='hover-ui-list'>
                     ${Object.keys(valueRecords)
                       .map(
-                        (key) => `
+                        // hack to make typescript not complain about using key in number index ways.
+                        (key: any) => `
                     <li>
                         <div class='hover-ui-color-box' style="background-color: ${MOTE_COLOR_MAP[key]}"></div>
                         <span>${valueRecords[key]}</span>

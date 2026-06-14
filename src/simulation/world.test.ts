@@ -24,6 +24,48 @@ describe('World', () => {
     expect(world.hasChanges).toBe(false);
   });
 
+  //    x-→ 0  1  2
+  //      +---------+
+  //  0 y | 0  1  2 |
+  //  1 ↓ | 3  4  5 |
+  //  2   | 6  7  8 |
+  //      +---------+
+  test.each([
+    { args: [1, 2], expected: [1, 2, 0, 0, 0, 0, 0, 0, 0] },
+    { args: [1, 0, 2], expected: [1, 2, 0, 0, 0, 0, 0, 0, 0] },
+    {
+      args: [8, 3, true],
+      expected: [1, 0, 0, 0, 0, 0, 0, 0, 3],
+      changes: [0, 8], // changes.pop() should return our arg index
+    },
+    {
+      args: [2, 2, 3, false],
+      expected: [1, 0, 0, 0, 0, 0, 0, 0, 3],
+      changes: [8, 0], // changes.pop() should return the default set (index 0)
+    },
+  ])('set', ({ args, expected, changes }) => {
+    const world = new World(3, 3);
+    world.set(0, 1);
+    if (args.length < 3 || typeof args[2] === 'boolean') {
+      const [index, value, forceNext] = args;
+      world.set(index as number, value as number, forceNext as boolean);
+    } else {
+      const [x, y, value, forceNext] = args;
+      world.set(
+        x as number,
+        y as number,
+        value as number,
+        forceNext as boolean,
+      );
+    }
+    // @ts-expect-error accessing private member
+    expect(world.motes).toEqual(expected);
+    if (changes) {
+      // @ts-expect-error accessing private member
+      expect(world.changes).toEqual(changes);
+    }
+  });
+
   describe('square 5x5 world', () => {
     const w = 5;
     const h = 5;
@@ -53,7 +95,7 @@ describe('World', () => {
       const x = 3;
       const y = 1;
       const index = 8;
-      world.setAt(x, y, value);
+      world.set(x, y, value);
       expect(world.get(index)).toBe(value);
       expect(world.get(x, y)).toBe(value);
     });
@@ -99,7 +141,7 @@ describe('World', () => {
         ${8}  | ${{ x: 2, y: 2 }} | ${[4, 5, 7]}                | ${[4, 5, 7]}
       `(`$index $coord 8way noWrap (default)`, ({ coord, sorted, actual }) => {
         const world = new World(w, h);
-        const result = world.getNeighborsAt(coord.x, coord.y);
+        const result = world.getNeighbors(coord.x, coord.y);
         expect([...result].sort((a, b) => a - b)).toEqual(sorted);
         // the actual results is clockwise from top left -> left
         expect(result).toEqual(actual);
@@ -120,7 +162,7 @@ describe('World', () => {
         ${7}  | ${{ x: 1, y: 2 }} | ${[0, 1, 2, 3, 4, 5, 6, 8]} | ${[3, 4, 5, 8, 2, 1, 0, 6]}
       `(`$index $coord 8way wrap`, ({ coord, sorted, actual }) => {
         const world = new World(w, h);
-        const result = world.getNeighborsAt(coord.x, coord.y, true, true);
+        const result = world.getNeighbors(coord.x, coord.y, true, true);
         expect([...result].sort((a, b) => a - b)).toEqual(sorted);
         // the actual results is clockwise from top left -> left
         expect(result).toEqual(actual);
@@ -169,16 +211,52 @@ describe('World', () => {
       //  2   | 10 | 11 | 12 | 13 | 14
       //      +-----------------------
       test.each`
-        index | actual
+        index | expected
         ${0}  | ${[1, 6, 5]}
         ${2}  | ${[3, 8, 7, 6, 1]}
         ${8}  | ${[2, 3, 4, 9, 14, 13, 12, 7]}
         ${14} | ${[8, 9, 13]}
-      `(`$index 8way noWrap`, ({ index, actual }) => {
+      `(`$index 8way noWrap`, ({ index, expected }) => {
         const world = setup();
-        const result = world.getNeighborValues(index, true);
-        expect(result).toEqual(actual);
+        const actual = world.getNeighborValues(index, true);
+        expect(actual).toEqual(expected);
       });
+
+      //  x -→   0    1    2    3    4
+      //      +-----------------------
+      //  0 y |  0 |  1 |  2 |  3 |  4
+      //  1 ↓ |  5 |  6 |  7 |  8 |  9
+      //  2   | 10 | 11 | 12 | 13 | 14
+      //      +-----------------------
+      test.each([
+        { args: [6], expected: [0, 1, 2, 7, 12, 11, 10, 5] }, // assumes index, true (default)
+        { args: [1, 1], expected: [0, 1, 2, 7, 12, 11, 10, 5] }, // assumes x, y, true (default)
+        { args: [6, true], expected: [0, 1, 2, 7, 12, 11, 10, 5] },
+        { args: [1, 1, true], expected: [0, 1, 2, 7, 12, 11, 10, 5] },
+        { args: [7, false], expected: [2, 8, 12, 6] },
+        { args: [2, 1, false], expected: [2, 8, 12, 6] },
+      ])(
+        'getNeighborValues x, y, and index argument structures',
+        ({ args, expected }) => {
+          const world = setup();
+          let actual: number[];
+          if (args.length < 2 || typeof args[1] === 'boolean') {
+            const [index, eightWay] = args;
+            actual = world.getNeighborValues(
+              index as number,
+              eightWay as boolean,
+            );
+          } else {
+            const [x, y, eightWay] = args;
+            actual = world.getNeighborValues(
+              x as number,
+              y as number,
+              eightWay as boolean,
+            );
+          }
+          expect(actual).toEqual(expected);
+        },
+      );
     });
 
     describe('getNeighborsAt', () => {
@@ -196,7 +274,7 @@ describe('World', () => {
         ${14} | ${{ x: 4, y: 2 }} | ${[8, 9, 13]}                  | ${[8, 9, 13]}
       `(`$index $coord 8way noWrap (default)`, ({ coord, sorted, actual }) => {
         const world = new World(w, h);
-        const result = world.getNeighborsAt(coord.x, coord.y);
+        const result = world.getNeighbors(coord.x, coord.y);
         expect([...result].sort((a, b) => a - b)).toEqual(sorted);
         // the actual results is clockwise from top left -> left
         expect(result).toEqual(actual);
@@ -216,7 +294,7 @@ describe('World', () => {
         ${14} | ${{ x: 4, y: 2 }} | ${[0, 3, 4, 5, 8, 9, 10, 13]}  | ${[8, 9, 5, 10, 0, 4, 3, 13]}
       `(`$index $coord 8way wrap`, ({ coord, sorted, actual }) => {
         const world = new World(w, h);
-        const result = world.getNeighborsAt(coord.x, coord.y, true, true);
+        const result = world.getNeighbors(coord.x, coord.y, true, true);
         expect([...result].sort((a, b) => a - b)).toEqual(sorted);
         // the actual results is clockwise from top left -> left
         expect(result).toEqual(actual);
@@ -238,7 +316,7 @@ describe('World', () => {
         ${14} | ${{ x: 4, y: 2 }} | ${[8, 9, 13]}
       `(`$index $coord 8way noWrap (default)`, ({ coord, actual }) => {
         const world = setup();
-        const result = world.getNeighborValuesAt(coord.x, coord.y);
+        const result = world.getNeighborValues(coord.x, coord.y);
         expect(result).toEqual(actual);
       });
     });

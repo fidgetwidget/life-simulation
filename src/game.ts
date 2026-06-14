@@ -37,13 +37,13 @@ export class Game {
 
   init() {
     this.attachEventListeners();
-    this.qworld.setAt(24, 31, Elements.TREE_STUMP);
+    this.qworld.setValue(24, 31, Elements.TREE_STUMP);
 
-    this.qworld.setAt(23, 31, Elements.TREE_STUMP);
-    this.qworld.setAt(23, 30, Elements.TREE_STUMP);
+    this.qworld.setValue(23, 31, Elements.TREE_STUMP);
+    this.qworld.setValue(23, 30, Elements.TREE_STUMP);
 
-    this.qworld.setAt(25, 31, Elements.TREE_STUMP);
-    this.qworld.setAt(24, 32, Elements.TREE_STUMP);
+    this.qworld.setValue(25, 31, Elements.TREE_STUMP);
+    this.qworld.setValue(24, 32, Elements.TREE_STUMP);
 
     this.initPaint();
     this.renderQuads();

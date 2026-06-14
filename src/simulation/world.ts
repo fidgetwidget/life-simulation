@@ -46,17 +46,24 @@ export class World {
     return this.motes[index];
   }
 
-  getNeighborValues(i: number, eightWay: boolean = true): number[] {
-    const x = Math.floor(i % this._w);
-    const y = Math.floor(i / this._w);
-    return this.getNeighborValuesAt(x, y, eightWay);
-  }
+  getNeighborValues(index: number, eightWay?: boolean): number[];
+  getNeighborValues(x: number, y: number, eightWay?: boolean): number[];
 
-  getNeighborValuesAt(
+  getNeighborValues(
     x: number,
-    y: number,
+    y?: number | boolean,
     eightWay: boolean = true,
   ): number[] {
+    let index: number;
+    if (y === undefined || typeof y === 'boolean') {
+      if (typeof y === 'boolean') eightWay = y;
+      index = x;
+      y = Math.floor(index / this._w);
+      x = Math.floor(index % this._w);
+    } else {
+      // x, y and eightWay are already assigned to the correct name
+      index = y * this._w + x;
+    }
     const maxx = this._w - 1;
     const maxy = this._h - 1;
     const minx = 0;
@@ -73,25 +80,33 @@ export class World {
     return coords.map(({ x, y }) => this.get(x, y));
   }
 
-  // get the neighbors values for a given index.
+  getNeighbors(index: number, eightWay?: boolean, wrap?: boolean): number[];
   getNeighbors(
-    i: number,
-    eightWay: boolean = true,
-    wrap: boolean = false,
-  ): number[] {
-    const x = Math.floor(i % this._w);
-    const y = Math.floor(i / this._w);
-    return this.getNeighborsAt(x, y, eightWay, wrap);
-  }
-
-  // get the neighbors values for a given positions coord.
-  getNeighborsAt(
     x: number,
     y: number,
-    eightWay: boolean = true,
+    eightWay?: boolean,
+    wrap?: boolean,
+  ): number[];
+
+  // get the neighbors values for a given index.
+  getNeighbors(
+    x: number,
+    y?: number | boolean,
+    eightWay?: boolean,
     wrap: boolean = false,
   ): number[] {
-    // TODO: optimize this - getNeighbors is expensive to call like this (generates a lot of memory garbage).
+    let index: number;
+    if (y === undefined || typeof y === 'boolean') {
+      // shift the params left...
+      wrap = eightWay === undefined ? false : eightWay;
+      eightWay = y === undefined ? true : y;
+      index = x;
+      x = Math.floor(index % this._w);
+      y = Math.floor(index / this._w);
+    } else {
+      if (eightWay === undefined) eightWay = true;
+      index = y * this._w + x;
+    }
     const maxx = this._w - 1;
     const maxy = this._h - 1;
     const minx = 0;
@@ -109,28 +124,38 @@ export class World {
     return coords.map(({ x, y }) => y * this._w + x);
   }
 
-  set(i: number, v: number, forceNext: boolean = false) {
-    if (i == null || v == null) debugger;
-    this.motes[i] = v;
-    forceNext ? this.changes.push(i) : this.changes.unshift(i);
-    Logger.debug('World:set', {
-      i,
-      v,
-      force: forceNext,
-      changes: JSON.stringify(this.changes),
-    });
-  }
+  /**
+   * set the value at the given index. optionally force it to be the next change processed.
+   */
+  set(index: number, value: number, forceNext?: boolean): void;
+  set(x: number, y: number, value: number, forceNext?: boolean): void;
 
-  setAt(x: number, y: number, v: number, forceNext: boolean = false) {
-    let i = y * this._w + x;
-    if (i == null || v == null) debugger;
-    this.motes[i] = v;
-    forceNext ? this.changes.push(i) : this.changes.unshift(i);
-    Logger.debug('World:setAt', {
+  set(
+    index: number,
+    y: number,
+    v?: boolean | number,
+    forceNext: boolean = false,
+  ) {
+    let x: number;
+    let value: number;
+    if (v === undefined || typeof v === 'boolean') {
+      if (typeof v === 'boolean') forceNext = v;
+      value = y;
+      x = Math.floor(index % this._w);
+      y = Math.floor(index / this._w);
+    } else {
+      // y and forceNext are already assigned to the correct name
+      x = index;
+      value = v;
+      index = y * this._w + x;
+    }
+    this.motes[index] = value;
+    forceNext ? this.changes.push(index) : this.changes.unshift(index);
+    Logger.debug('World:set', {
+      index,
       x,
       y,
-      i,
-      v,
+      value,
       force: forceNext,
       changes: JSON.stringify(this.changes),
     });

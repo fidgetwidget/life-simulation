@@ -25,18 +25,19 @@ describe('QWorld', () => {
     expect(qworld.root.chunksHigh).toEqual(8);
   });
 
+  // TODO: expand this test to other sized worlds and other depths.
   test.each([
-    { w: 32, h: 32, d: 3, get: { x: 0, y: 0, result: 0 } },
-    { w: 32, h: 32, d: 3, get: { x: 10, y: 0, result: 2 } },
-    { w: 32, h: 32, d: 3, get: { x: 0, y: 10, result: 8 } },
-    { w: 32, h: 32, d: 3, get: { x: 10, y: 10, result: 10 } },
+    { w: 32, h: 32, d: 3, get: { x: 0, y: 0, chunkIndex: 0 } },
+    { w: 32, h: 32, d: 3, get: { x: 10, y: 0, chunkIndex: 2 } },
+    { w: 32, h: 32, d: 3, get: { x: 0, y: 10, chunkIndex: 8 } },
+    { w: 32, h: 32, d: 3, get: { x: 10, y: 10, chunkIndex: 10 } },
   ])(
     `getChunkAtWorld [w:$w h:$h, d:$d] @ x:$get.x y:$get.y `,
     ({ w, h, d, get }) => {
       const qworld = new QWorld(w, h, d);
-      const { x, y, result } = get;
+      const { x, y, chunkIndex: index } = get;
       const chunk = qworld.getChunkAtWorld(x, y);
-      expect(chunk.index).toBe(result);
+      expect(chunk.index).toBe(index);
     },
   );
 });
