@@ -1,5 +1,6 @@
 import { MOTE_COLOR_MAP } from '../color-map';
 import { TILE_SIZE } from '../const';
+import { Logger } from '../lib/Logger';
 import type { QWorld } from '../simulation';
 import { Chunk } from '../simulation/chunk';
 import './HoverUI.css';
@@ -77,8 +78,17 @@ export class HoverUI {
         return acc;
       }, {}) ?? {};
     const rect: DOMRect = this.canvas.getBoundingClientRect();
-    const x = (this.chunk?.x ?? 0) * TILE_SIZE - rect.left;
-    const y = (this.chunk?.y ?? 0) * TILE_SIZE - rect.top;
+    const cx = this.chunk?.x ?? 0;
+    const cy = this.chunk?.y ?? 0;
+    const cw = this.chunk?.w ?? 0;
+    const ch = this.chunk?.h ?? 0;
+    const x = cx * TILE_SIZE - rect.left;
+    const y = cy * TILE_SIZE - rect.top;
+    const w = cw * TILE_SIZE;
+    const h = ch * TILE_SIZE;
+    const scrollx = document.scrollingElement?.scrollLeft ?? 0;
+    const scrolly = document.scrollingElement?.scrollTop ?? 0;
+    Logger.info('HoverUi:updateDom', { x, y, cx, cy, scrollx, scrolly });
     this.dom.innerHTML = `
     <div class='hover-ui-container'>
         <ul class='hover-ui-list'>
@@ -110,7 +120,7 @@ export class HoverUI {
     </div>
     <div
         class='hover-ui-chunk-highlight'
-        style="width: ${(this.chunk?.w ?? 1) * TILE_SIZE}px; height: ${(this.chunk?.h ?? 1) * TILE_SIZE}px; left: ${x}px; top: ${y}px;"
+        style="width: ${w}px; height: ${h}px; left: ${x - scrollx}px; top: ${y - scrolly}px;"
     ></div>
     `;
   }

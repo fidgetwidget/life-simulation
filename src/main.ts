@@ -47,3 +47,10 @@ function render() {
   requestAnimationFrame(render);
 }
 requestAnimationFrame(render);
+
+if (__DEBUG__) {
+  // @ts-expect-error attaching variable to window without defining it on window.
+  window.Stats = stats;
+  // @ts-expect-error
+  window.Game = game;
+}
