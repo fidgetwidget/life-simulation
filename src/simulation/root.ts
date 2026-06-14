@@ -1,6 +1,17 @@
 import { Logger } from '../lib/Logger';
 import { Chunk } from './chunk';
 
+export interface RootParams {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  depth: number;
+}
+
+export const RootFactory = ({ x, y, w, h, depth }: RootParams) =>
+  new Root(x, y, w, h, depth);
+
 export class Root {
   public x: number;
   public y: number;
@@ -32,13 +43,13 @@ export class Root {
     return this.h / this.chunksHigh;
   }
 
-  constructor(x: number, y: number, w: number, h: number, size: number) {
+  constructor(x: number, y: number, w: number, h: number, depth: number) {
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
-    this.depth = size;
-    const quadLength = 2 ** size;
+    this.depth = depth;
+    const quadLength = 2 ** depth;
     const length = quadLength * quadLength;
     if (w < quadLength || h < quadLength)
       throw new Error(
@@ -50,7 +61,7 @@ export class Root {
       y,
       w,
       h,
-      size,
+      depth,
       length,
       quadLength,
     });
@@ -79,7 +90,7 @@ export class Root {
 
   getChunk(index: number, y?: number): Chunk {
     if (y !== undefined) {
-      index = y * this.chunkWidth + index;
+      index = y * this.chunksWide + index;
     }
     return this.chunks[index];
   }

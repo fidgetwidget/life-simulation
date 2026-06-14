@@ -28,7 +28,7 @@
 .hover-ui-chunk-highlight {
     pointer-events: none;
     position: absolute;
-    border: 1px solid #aaa;
+    border: 1px solid #ff0000;
 }
 
 .hide {

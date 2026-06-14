@@ -2,6 +2,18 @@ import { Logger } from '../lib/Logger.ts';
 import { getNeighbors } from '../util';
 import { Root } from './root.ts';
 
+export interface ChunkParams {
+  index: number;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  root: Root;
+}
+
+export const ChunkFactory = ({ index, x, y, w, h, root }: ChunkParams) =>
+  new Chunk(index, x, y, w, h, root);
+
 export class Chunk {
   index: number;
   x: number;

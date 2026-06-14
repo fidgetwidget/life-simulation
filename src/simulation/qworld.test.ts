@@ -29,8 +29,10 @@ describe('QWorld', () => {
   test.each([
     { w: 32, h: 32, d: 3, get: { x: 0, y: 0, chunkIndex: 0 } },
     { w: 32, h: 32, d: 3, get: { x: 10, y: 0, chunkIndex: 2 } },
-    { w: 32, h: 32, d: 3, get: { x: 0, y: 10, chunkIndex: 8 } },
-    { w: 32, h: 32, d: 3, get: { x: 10, y: 10, chunkIndex: 10 } },
+    { w: 32, h: 32, d: 3, get: { x: 0, y: 10, chunkIndex: 16 } },
+    { w: 32, h: 32, d: 3, get: { x: 10, y: 10, chunkIndex: 18 } },
+    { w: 64, h: 64, d: 4, get: { x: 10, y: 10, chunkIndex: 34 } },
+    { w: 128, h: 128, d: 5, get: { x: 10, y: 10, chunkIndex: 66 } },
   ])(
     `getChunkAtWorld [w:$w h:$h, d:$d] @ x:$get.x y:$get.y `,
     ({ w, h, d, get }) => {
