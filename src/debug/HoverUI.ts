@@ -88,6 +88,7 @@ export class HoverUI {
     const h = ch * TILE_SIZE;
     const scrollx = document.scrollingElement?.scrollLeft ?? 0;
     const scrolly = document.scrollingElement?.scrollTop ?? 0;
+    const count = values?.length ?? 0;
     Logger.info('HoverUi:updateDom', { x, y, cx, cy, scrollx, scrolly });
     this.dom.innerHTML = `
     <div class='hover-ui-container'>
@@ -102,7 +103,7 @@ export class HoverUI {
             </li>
             <li>
                 <label>values</label>
-                <ul class='hover-ui-list'>
+                <ul class='hover-ui-list hover-ui-value-records'>
                     ${Object.keys(valueRecords)
                       .map(
                         // hack to make typescript not complain about using key in number index ways.
@@ -110,6 +111,7 @@ export class HoverUI {
                     <li>
                         <div class='hover-ui-color-box' style="background-color: ${MOTE_COLOR_MAP[key]}"></div>
                         <span>${valueRecords[key]}</span>
+                        <span>${Math.floor((valueRecords[key] / count) * 100)}%</span>
                     </li>
                     `,
                       )

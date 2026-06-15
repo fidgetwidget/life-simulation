@@ -25,6 +25,17 @@
     padding: 3px;
 }
 
+.hover-ui-value-records > li {
+    display: flex;
+    flex-direction: row;
+    margin-block: 0.5em;
+}
+
+.hover-ui-value-records > li > * {
+    flex: 1;
+    padding-inline: 0.5em;
+}
+
 .hover-ui-chunk-highlight {
     pointer-events: none;
     position: absolute;

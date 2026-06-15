@@ -35,11 +35,16 @@ describe('Chunk', () => {
     }) => {
       const root: Root = RootFactory(rootParams);
       const chunk: Chunk = ChunkFactory({ ...chunkParams, root });
+
+      // chunk aligns to the root it belongs to
+      // TODO: throw errors/warnings if the chunk constructed isn't aligned
       expect(root.chunkWidth).toEqual(chunk.w);
       expect(root.chunkHeight).toEqual(chunk.h);
+      expect(root.chunks[chunk.index].coord).toEqual(chunk.coord);
+
+      // chunk has the expected values
       expect(chunk.indexes).toEqual(chunkIndexes);
       expect(chunk.neighbors).toEqual(chunkNeighbors);
-      expect(root.chunks[chunk.index].coord).toEqual(chunk.coord);
     },
   );
 });
