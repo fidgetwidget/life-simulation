@@ -1,3 +1,139 @@
 body {
   margin: 0;
+  font-family:'Courier New', Courier, monospace;
+  font-size: 14px;
 }
+
+h1, h2, h3, .h1, .h2, .h3 {
+  color: #111827;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+h1, .h1 {
+  font-size: 2.5rem;      /* 40px */
+  margin-top: 0;
+  letter-spacing: -0.05em;
+}
+
+h2, .h2 {
+  font-size: 1.75rem;     /* 28px */
+  margin-top: 2rem;
+  letter-spacing: -0.03em;
+}
+
+h3, .h3 {
+  font-size: 1.35rem;     /* 21.6px */
+  margin-top: 1.5rem;
+}
+
+button {
+  border: 1px solid #aaaaaa;
+  background-color: #f3f3f3;
+  color: #535353;
+  cursor: pointer;
+  display: inline-block;
+  margin-inline: auto;
+  padding-block: 0.5em;
+  padding-inline: 2em;
+  box-shadow: 0px 5px 13px #55555533;
+  transition: box-shadow 0.3s, border-color 0.1s;
+}
+
+button:hover {
+  border-color: #cccccc;
+  box-shadow: 0px 1px 3px #55555533;
+}
+
+.center-text {
+  text-align: center;
+}
+
+.hide {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+#app {
+  position: relative;
+}
+
+#mainmenu {
+  margin: 1em;
+  padding: 1em;
+  border: 1px solid #dddddd;
+  border-radius: 5px;
+
+  background: #ffffff;
+  width: 40vw;
+  max-height: 40vh;
+
+  display: flex;
+  flex-direction: column;
+}
+
+#pausebtn {
+  border: 0;
+  background: transparent;
+  box-sizing: border-box;
+  width: 0;
+  height: 6em;
+
+  border-color: transparent transparent transparent #555555dd;
+  transition: 100ms all ease;
+  cursor: pointer;
+
+  &.play {
+    border-style: solid;
+    border-width: 3em 0 3em 5.4em;
+    &:hover {
+      border-style: double;
+      border-width: 0 0 0 5.4em;
+    }
+  }
+
+  &.pause {
+    border-style: double;
+    border-width: 0 0 0 5.4em;
+
+    &:hover {
+      border-style: solid;
+      border-width: 3em 0 3em 5.4em;
+    }
+  }
+
+  &:hover {
+    border-left-color: #555555aa;
+  }
+}
+
+/* every-layout bits and bobs */
+
+.center {
+  box-sizing: content-box;
+  margin-inline: auto;
+  max-inline-size: var(--measure, 100vw);
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.imposter {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.imposter--fixed {
+  position: fixed;
+}
+
+.imposter.contain {
+  --margin: 0.5em;
+  overflow: auto;
+  max-inline-size: calc(100% - (var(--margin) * 2));
+  max-block-size: calc(100% - (var(--margin) * 2));
+}
+

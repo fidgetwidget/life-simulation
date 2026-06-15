@@ -12,6 +12,7 @@ export class HoverUI {
   qworld: QWorld;
   chunk?: Chunk;
   active: boolean = false;
+  visible: boolean = __DEBUG__;
 
   public dom: HTMLDivElement;
 
@@ -26,6 +27,14 @@ export class HoverUI {
     console.debug('HoverUi:new');
   }
 
+  public show() {
+    this.visible = true;
+  }
+
+  public hide() {
+    this.visible = false;
+  }
+
   attachEventListeners() {
     this.canvas.addEventListener('mousemove', this.handleMouseMove.bind(this));
     this.canvas.addEventListener('mouseover', this.handleMouseOver.bind(this));
@@ -33,7 +42,7 @@ export class HoverUI {
   }
 
   handleMouseMove(event: MouseEvent) {
-    if (!this.active) return;
+    if (!this.active || !this.visible) return;
     const rect: DOMRect = this.canvas.getBoundingClientRect();
     const canvasx = event.clientX - rect.left;
     const canvasy = event.clientY - rect.top;
@@ -59,9 +68,9 @@ export class HoverUI {
     if (!this.dom.classList.contains('hide')) this.dom.classList.add('hide');
   }
 
-  updateChunk(chunk: Chunk) {
-    console.debug('HoverUi:updateChunk', { chunk, index: chunk.index });
-    if (this.chunk?.index === chunk.index) return;
+  updateChunk(chunk?: Chunk) {
+    console.debug('HoverUi:updateChunk', { chunk, index: chunk?.index });
+    if (this.chunk?.index === chunk?.index) return;
 
     this.chunk = chunk;
     this.updateDom();
@@ -82,14 +91,16 @@ export class HoverUI {
     const cy = this.chunk?.y ?? 0;
     const cw = this.chunk?.w ?? 0;
     const ch = this.chunk?.h ?? 0;
-    const x = cx * TILE_SIZE - rect.left;
-    const y = cy * TILE_SIZE - rect.top;
+    const x = cx * TILE_SIZE + rect.left;
+    const y = cy * TILE_SIZE + rect.top;
     const w = cw * TILE_SIZE;
     const h = ch * TILE_SIZE;
     const scrollx = document.scrollingElement?.scrollLeft ?? 0;
     const scrolly = document.scrollingElement?.scrollTop ?? 0;
     const count = values?.length ?? 0;
-    Logger.info('HoverUi:updateDom', { x, y, cx, cy, scrollx, scrolly });
+    Logger.info('HoverUi:updateDom', { x, y, cx, cy, scrollx, scrolly, rect });
+
+    // TODO: move this to a template or something to be better managed/maintained...
     this.dom.innerHTML = `
     <div class='hover-ui-container'>
         <ul class='hover-ui-list'>

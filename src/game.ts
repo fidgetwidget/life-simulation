@@ -13,6 +13,13 @@ import { Simulation } from './simulation/simulation.ts';
 import { HoverUI } from './debug/HoverUI.ts';
 import { Logger } from './lib/Logger.ts';
 
+export enum GameEventTypes {
+  Pause = 'pause',
+  UnPause = 'unpause',
+}
+
+const PauseEvent = new Event(GameEventTypes.Pause);
+const UnPauseEvent = new Event(GameEventTypes.UnPause);
 export class Game {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
@@ -20,8 +27,19 @@ export class Game {
   qworld: QWorld;
   sim: Simulation;
   changes: QuadData[];
+  debugUi: HoverUI;
 
-  paused: boolean = true;
+  private _paused: boolean = true;
+  get paused() {
+    return this._paused;
+  }
+
+  set paused(val: boolean) {
+    this._paused = val;
+    val
+      ? this.eventTarget.dispatchEvent(PauseEvent)
+      : this.eventTarget.dispatchEvent(UnPauseEvent);
+  }
 
   constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
     this.canvas = canvas;
@@ -31,8 +49,8 @@ export class Game {
     this.sim = new Simulation(this.qworld);
     this.changes = [];
 
-    const hui = new HoverUI(canvas, this.qworld);
-    document.body.appendChild(hui.dom);
+    this.debugUi = new HoverUI(canvas, this.qworld);
+    document.body.appendChild(this.debugUi.dom);
   }
 
   init() {
@@ -51,20 +69,34 @@ export class Game {
   }
 
   attachEventListeners() {
+    document.addEventListener('keyup', this.handleKeyUp.bind(this));
     this.canvas.addEventListener('mousemove', this.handleMouseMove.bind(this));
     this.canvas.addEventListener('click', this.handleMouseClick.bind(this));
   }
 
+  handleKeyUp(event: KeyboardEvent) {
+    switch (event.key.toUpperCase()) {
+      case 'P':
+        this.paused = !this.paused;
+        break;
+    }
+  }
+
   handleMouseMove(event: MouseEvent) {
-    // const rect: DOMRect = this.canvas.getBoundingClientRect();
-    // const x = event.clientX - rect.left;
-    // const y = event.clientY - rect.top;
+    // TODO: determine the 'entity' (group of motes) the cursor is hovering over to provide contextual UI for.
   }
 
   handleMouseClick(event: MouseEvent) {
-    this.paused = !this.paused;
     Logger.debug('click', { x: event.clientX, y: event.clientY });
-    // TODO: add controls to add different elements to the map.
+    const rect: DOMRect = this.canvas.getBoundingClientRect();
+    const canvasx = event.clientX - rect.left;
+    const canvasy = event.clientY - rect.top;
+    // x,y position on the canvas to world x,y
+    const worldx = Math.floor(canvasx / TILE_SIZE);
+    const worldy = Math.floor(canvasy / TILE_SIZE);
+    const value = this.qworld.getValue(worldx, worldy);
+    if (value !== Elements.EMPTY)
+      this.qworld.setValue(worldx, worldy, Elements.EMPTY);
   }
 
   initPaint() {
@@ -116,4 +148,17 @@ export class Game {
       count++;
     }
   }
+
+  // events
+  addEventListener(
+    type: GameEventTypes,
+    listener: EventListener | EventListenerObject,
+  ) {
+    if (!Object.values(GameEventTypes).includes(type)) {
+      throw Error('invalid game event');
+    }
+    this.eventTarget.addEventListener(type, listener);
+  }
+
+  private eventTarget: EventTarget = new EventTarget();
 }
