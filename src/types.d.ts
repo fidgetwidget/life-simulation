@@ -1,6 +1,7 @@
 type World = import('./simulation/world').World;
 type Chunk = import('./simulation/chunk').Chunk;
-type Element = import('./simulation/elements').Elements;
+type Element = import('./elements').Elements;
+type XY = import('./util/XY').XY;
 
 declare const __DEBUG__: boolean;
 
@@ -9,11 +10,6 @@ type QuadData = {
   y: number;
   i: number;
   v: number;
-};
-
-type XY = {
-  x: number;
-  y: number;
 };
 
 type BehaviourFilterProps = {

@@ -1,5 +1,6 @@
 import { Logger } from '../lib/Logger';
 import { getNeighbors } from '../util';
+import { XY } from '../util/XY';
 
 export class World {
   private _w: number;
@@ -64,19 +65,9 @@ export class World {
       // x, y and eightWay are already assigned to the correct name
       index = y * this._w + x;
     }
-    const maxx = this._w - 1;
-    const maxy = this._h - 1;
-    const minx = 0;
-    const miny = 0;
-    const coords = getNeighbors(
-      { x, y },
-      maxx,
-      maxy,
-      minx,
-      miny,
-      false,
-      eightWay,
-    );
+    const min = XY.Zero;
+    const max = XY(this._w - 1, this._h - 1);
+    const coords = getNeighbors(XY(x, y), min, max, false, eightWay);
     return coords.map(({ x, y }) => this.get(x, y));
   }
 
@@ -107,20 +98,10 @@ export class World {
       if (eightWay === undefined) eightWay = true;
       index = y * this._w + x;
     }
-    const maxx = this._w - 1;
-    const maxy = this._h - 1;
-    const minx = 0;
-    const miny = 0;
-    const coords = getNeighbors(
-      { x, y },
-      maxx,
-      maxy,
-      minx,
-      miny,
-      wrap,
-      eightWay,
-    );
-    Logger.debug('getNeighborsAt', { x, y, maxx, maxy, minx, miny, coords });
+    const min = XY.Zero;
+    const max = XY(this._w - 1, this._h - 1);
+    const coords = getNeighbors({ x, y }, min, max, wrap, eightWay);
+    Logger.debug('getNeighborsAt', { x, y, min, max, coords });
     return coords.map(({ x, y }) => y * this._w + x);
   }
 

@@ -9,6 +9,7 @@ import {
   vi,
 } from 'vitest';
 import { Root, RootFactory, type RootParams } from './root';
+import { XY } from '../util/XY';
 
 describe.only('Root', () => {
   test.each([
@@ -21,7 +22,7 @@ describe.only('Root', () => {
       //  .   | .  .  .  . |
       //      +------------+
       root: { x: 0, y: 0, w: 4, h: 4, depth: 0 },
-      chunks: [{ index: 0, coord: { x: 0, y: 0 }, x: 0, y: 0, w: 4, h: 4 }],
+      chunks: [{ index: 0, coord: XY.Zero, x: 0, y: 0, w: 4, h: 4 }],
     },
     {
       //    x-→ 0  .  1  .
@@ -33,10 +34,10 @@ describe.only('Root', () => {
       //      +------------+
       root: { x: 0, y: 0, w: 4, h: 4, depth: 1 },
       chunks: [
-        { index: 0, coord: { x: 0, y: 0 }, x: 0, y: 0, w: 2, h: 2 },
-        { index: 1, coord: { x: 1, y: 0 }, x: 2, y: 0, w: 2, h: 2 },
-        { index: 2, coord: { x: 0, y: 1 }, x: 0, y: 2, w: 2, h: 2 },
-        { index: 3, coord: { x: 1, y: 1 }, x: 2, y: 2, w: 2, h: 2 },
+        { index: 0, coord: XY(0, 0), x: 0, y: 0, w: 2, h: 2 },
+        { index: 1, coord: XY(1, 0), x: 2, y: 0, w: 2, h: 2 },
+        { index: 2, coord: XY(0, 1), x: 0, y: 2, w: 2, h: 2 },
+        { index: 3, coord: XY(1, 1), x: 2, y: 2, w: 2, h: 2 },
       ],
     },
     {
@@ -51,10 +52,10 @@ describe.only('Root', () => {
       //      +-------------------+
       root: { x: 0, y: 0, w: 8, h: 8, depth: 1 },
       chunks: [
-        { index: 0, coord: { x: 0, y: 0 }, x: 0, y: 0, w: 4, h: 4 },
-        { index: 1, coord: { x: 1, y: 0 }, x: 4, y: 0, w: 4, h: 4 },
-        { index: 2, coord: { x: 0, y: 1 }, x: 0, y: 4, w: 4, h: 4 },
-        { index: 3, coord: { x: 1, y: 1 }, x: 4, y: 4, w: 4, h: 4 },
+        { index: 0, coord: XY(0, 0), x: 0, y: 0, w: 4, h: 4 },
+        { index: 1, coord: XY(1, 0), x: 4, y: 0, w: 4, h: 4 },
+        { index: 2, coord: XY(0, 1), x: 0, y: 4, w: 4, h: 4 },
+        { index: 3, coord: XY(1, 1), x: 4, y: 4, w: 4, h: 4 },
       ],
     },
     {
@@ -67,10 +68,10 @@ describe.only('Root', () => {
       //      +------------+
       root: { x: 0, y: 0, w: 16, h: 16, depth: 1 },
       chunks: [
-        { index: 0, coord: { x: 0, y: 0 }, x: 0, y: 0, w: 8, h: 8 },
-        { index: 1, coord: { x: 1, y: 0 }, x: 8, y: 0, w: 8, h: 8 },
-        { index: 2, coord: { x: 0, y: 1 }, x: 0, y: 8, w: 8, h: 8 },
-        { index: 3, coord: { x: 1, y: 1 }, x: 8, y: 8, w: 8, h: 8 },
+        { index: 0, coord: XY(0, 0), x: 0, y: 0, w: 8, h: 8 },
+        { index: 1, coord: XY(1, 0), x: 8, y: 0, w: 8, h: 8 },
+        { index: 2, coord: XY(0, 1), x: 0, y: 8, w: 8, h: 8 },
+        { index: 3, coord: XY(1, 1), x: 8, y: 8, w: 8, h: 8 },
       ],
     },
   ])(

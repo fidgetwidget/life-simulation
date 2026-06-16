@@ -12,6 +12,8 @@ import { MOTE_COLOR_MAP } from './color-map.ts';
 import { Simulation } from './simulation/simulation.ts';
 import { HoverUI } from './debug/HoverUI.ts';
 import { Logger } from './lib/Logger.ts';
+import { XY } from './util';
+import { getPointsAlongLine } from './util/Line.ts';
 
 export enum GameEventTypes {
   Pause = 'pause',
@@ -55,6 +57,15 @@ export class Game {
 
   init() {
     this.attachEventListeners();
+    this.initTrees();
+    this.initRiver();
+
+    this.initPaint();
+    this.renderQuads();
+    console.debug('game:init', { world: this.world, qworld: this.qworld });
+  }
+
+  initTrees() {
     this.qworld.setValue(24, 31, Elements.TREE_STUMP);
 
     this.qworld.setValue(23, 31, Elements.TREE_STUMP);
@@ -62,10 +73,26 @@ export class Game {
 
     this.qworld.setValue(25, 31, Elements.TREE_STUMP);
     this.qworld.setValue(24, 32, Elements.TREE_STUMP);
+  }
 
-    this.initPaint();
-    this.renderQuads();
-    console.debug('game:init', { world: this.world, qworld: this.qworld });
+  initRiver() {
+    const setments = [
+      ...getPointsAlongLine(
+        XY(WIDTH - 5, 0),
+        XY(WIDTH - 8, HEIGHT / 2),
+        XY.Zero,
+        XY(WIDTH, HEIGHT),
+      ),
+      getPointsAlongLine(
+        XY(WIDTH - 8, HEIGHT / 2),
+        XY(WIDTH - 3, HEIGHT),
+        XY.Zero,
+        XY(WIDTH, HEIGHT),
+      ),
+    ];
+    setments.flat().forEach(({ x, y }) => {
+      this.qworld.setValue(x, y, Elements.MOVING_WATER);
+    });
   }
 
   attachEventListeners() {
@@ -87,10 +114,11 @@ export class Game {
   }
 
   handleMouseClick(event: MouseEvent) {
-    Logger.debug('click', { x: event.clientX, y: event.clientY });
+    const { clientX, clientY } = event;
+    Logger.debug('click', XY(clientX, clientY));
     const rect: DOMRect = this.canvas.getBoundingClientRect();
-    const canvasx = event.clientX - rect.left;
-    const canvasy = event.clientY - rect.top;
+    const canvasx = clientX - rect.left;
+    const canvasy = clientY - rect.top;
     // x,y position on the canvas to world x,y
     const worldx = Math.floor(canvasx / TILE_SIZE);
     const worldy = Math.floor(canvasy / TILE_SIZE);

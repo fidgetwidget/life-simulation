@@ -1,5 +1,5 @@
 import { pickRandom } from '../../util';
-import { Elements } from '../elements';
+import { Elements } from '../../elements';
 
 export const BehavioursGrowIntoAForest: Behaviour[] = [
   {

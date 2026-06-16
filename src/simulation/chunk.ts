@@ -1,5 +1,6 @@
 import { Logger } from '../lib/Logger.ts';
 import { getNeighbors } from '../util';
+import { XY } from '../util/XY.ts';
 import { Root } from './root.ts';
 
 export interface ChunkParams {
@@ -46,13 +47,15 @@ export class Chunk {
    */
   get neighbors(): number[] {
     if (this._neighbors == null) {
-      let maxx, maxy;
-      maxx = this.root.chunksWide - 1;
-      maxy = this.root.chunksHigh - 1;
-      const ncoords = getNeighbors(this.coord, maxx, maxy, 0, 0, false);
+      const min = XY.Zero;
+      const max = {
+        x: this.root.chunksWide - 1,
+        y: this.root.chunksHigh - 1,
+      };
+      const ncoords = getNeighbors(this.coord, min, max, false);
       // Logger.debug('Chunk:neighbors', {
-      //   maxx,
-      //   maxy,
+      //   min,
+      //   max,
       //   i: this.index,
       //   x: this.coord.x,
       //   y: this.coord.y,
