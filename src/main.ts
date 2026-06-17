@@ -6,7 +6,7 @@ import { convertStyleObjectToString } from './util/Dom.ts';
 
 // TODO: move this to a template or something to be better managed/maintained...
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-<div class='center'>
+<div class='center full-height'>
   <div
     id='mainmenu'
     class='imposter imposter--fixed'
