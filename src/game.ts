@@ -1,4 +1,4 @@
-import { Elements, World, QWorld } from './simulation/index.ts';
+import { MOTE_COLOR_MAP } from '@/color-map.ts';
 import {
   TILE_SIZE,
   QUAD_DEPTH,
@@ -7,13 +7,14 @@ import {
   CHUNK_LINES_COLOR,
   SIM_PER_TICK_CAP,
   MAX_CHANGE_PER_TICK,
-} from './const.ts';
-import { MOTE_COLOR_MAP } from './color-map.ts';
-import { Simulation } from './simulation/simulation.ts';
-import { HoverUI } from './debug/HoverUI.ts';
-import { Logger } from './lib/Logger.ts';
-import { XY } from './util';
-import { getPointsAlongLine } from './util/Line.ts';
+} from '@/const.ts';
+import { HoverUI } from '@/debug/HoverUI.ts';
+import { Elements } from '@/elements.ts';
+import { Logger } from '@/lib/Logger.ts';
+import { World, QWorld } from '@/simulation';
+import { Simulation } from '@/simulation/simulation.ts';
+import { XY } from '@/util';
+import { getPointsAlongLine } from '@/util/Line.ts';
 
 export enum GameEventTypes {
   Pause = 'pause',

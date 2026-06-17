@@ -1,7 +1,7 @@
-import { SIM_PER_TICK_CAP } from '../const';
 import { behaviours } from './behaviours';
 import type { QWorld } from './qworld';
 import type { World } from './world';
+import { SIM_PER_TICK_CAP } from '@/const';
 
 export class Simulation {
   world: World;

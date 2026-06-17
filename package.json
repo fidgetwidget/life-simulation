@@ -7,17 +7,23 @@
     "start": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "fmt": "prettier . --write"
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "fps.ts": "^0.18.5",
     "prettier": "^3.8.4",
     "typescript": "~6.0.2",
     "vite": "^8.0.12",
+    "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.8"
   },
   "prettier": {
     "trailingComma": "all",
-    "singleQuote": true
+    "singleQuote": true,
+    "plugins": [
+      "@trivago/prettier-plugin-sort-imports"
+    ]
   }
 }

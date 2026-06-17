@@ -1,5 +1,5 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { World } from './world';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 describe('World', () => {
   let consoleMock: any;

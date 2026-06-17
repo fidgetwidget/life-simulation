@@ -1,6 +1,5 @@
-import { Logger } from '../lib/Logger';
-import { getNeighbors } from '../util';
-import { XY } from '../util/XY';
+import { Logger } from '@/lib/Logger';
+import { getNeighbors, XY } from '@/util';
 
 export class World {
   private _w: number;

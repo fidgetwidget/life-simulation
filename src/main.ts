@@ -1,8 +1,8 @@
-import './style.css';
 import { WIDTH, HEIGHT, TILE_SIZE } from './const.ts';
 import { Game, GameEventTypes } from './game.ts';
-import Stats from 'fps.ts';
+import './style.css';
 import { convertStyleObjectToString } from './util/Dom.ts';
+import Stats from 'fps.ts';
 
 // TODO: move this to a template or something to be better managed/maintained...
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `

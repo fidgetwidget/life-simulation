@@ -1,3 +1,5 @@
+import { Root, RootFactory, type RootParams } from './root';
+import { XY } from '@/util/XY';
 import {
   afterAll,
   afterEach,
@@ -8,8 +10,6 @@ import {
   test,
   vi,
 } from 'vitest';
-import { Root, RootFactory, type RootParams } from './root';
-import { XY } from '../util/XY';
 
 describe.only('Root', () => {
   test.each([

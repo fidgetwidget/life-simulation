@@ -4,13 +4,13 @@
  * Otherwise it just returns the val given.
  */
 export function wrapAround(
-	val: number, //.
-	min: number,
-	max: number,
+  val: number, //.
+  min: number,
+  max: number,
 ): number {
-	if (val < min) return max;
-	if (val > max) return min;
-	return val;
+  if (val < min) return max;
+  if (val > max) return min;
+  return val;
 }
 
 /**
@@ -18,11 +18,11 @@ export function wrapAround(
  * Otherwise it just returns the val given.
  */
 export function clampFail(
-	val: number,
-	min: number,
-	max: number,
+  val: number,
+  min: number,
+  max: number,
 ): number | null {
-	if (val < min) return null;
-	if (val > max) return null;
-	return val;
+  if (val < min) return null;
+  if (val > max) return null;
+  return val;
 }

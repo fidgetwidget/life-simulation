@@ -1,6 +1,6 @@
-import { pickRandom } from '../../util';
-import { Elements } from '../../elements';
-import { getCountsReducer } from './utils';
+import { Elements } from '@/elements';
+import { getCountsReducer } from '@/simulation/behaviours/utils';
+import { pickRandom } from '@/util';
 
 export const BehavioursExpandTreeIntoRoot: Behaviour[] = [
   {

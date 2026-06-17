@@ -1,3 +1,5 @@
+import { Chunk, ChunkFactory } from './chunk';
+import { Root, RootFactory } from './root';
 import {
   afterAll,
   afterEach,
@@ -8,8 +10,6 @@ import {
   test,
   vi,
 } from 'vitest';
-import { Root, RootFactory } from './root';
-import { Chunk, ChunkFactory } from './chunk';
 
 describe('Chunk', () => {
   test.each([

@@ -1,7 +1,7 @@
-import { Logger } from '../lib/Logger';
 import type { Chunk } from './chunk';
 import { Root } from './root';
 import { World } from './world';
+import { Logger } from '@/lib/Logger';
 
 /**
  * Provide an interface to a World with Quads/Chunks.

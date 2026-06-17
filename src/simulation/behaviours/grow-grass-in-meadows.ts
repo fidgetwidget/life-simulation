@@ -1,5 +1,5 @@
-import { pickRandom } from '../../util';
-import { Elements } from '../../elements';
+import { Elements } from '@/elements';
+import { pickRandom } from '@/util';
 
 export const GrowGrassInMeadows: Behaviour = {
   // has trees and grass and lots of empty space

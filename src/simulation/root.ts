@@ -1,5 +1,5 @@
-import { Logger } from '../lib/Logger';
 import { Chunk, ChunkFactory } from './chunk';
+import { Logger } from '@/lib/Logger';
 
 export interface RootParams {
   x: number;
