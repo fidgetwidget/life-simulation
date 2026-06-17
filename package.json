@@ -4,26 +4,26 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "test": "vitest",
-    "fmt": "prettier . --write"
+    "start": "vp dev",
+    "build": "tsc && vp build",
+    "preview": "vp preview",
+    "test": "vp test",
+    "lint": "vp lint",
+    "lint:fix": "vp lint --fix",
+    "prepare": "vp config"
   },
   "devDependencies": {
-    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "fps.ts": "^0.18.5",
-    "prettier": "^3.8.4",
     "typescript": "~6.0.2",
-    "vite": "^8.0.12",
+    "vite": "npm:@voidzero-dev/vite-plus-core@latest",
+    "vite-plugin-oxlint": "^2.1.2",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.8"
+    "vitest": "npm:@voidzero-dev/vite-plus-test@latest",
+    "vite-plus": "latest"
   },
-  "prettier": {
-    "trailingComma": "all",
-    "singleQuote": true,
-    "plugins": [
-      "@trivago/prettier-plugin-sort-imports"
-    ]
+  "packageManager": "npm@11.17.0",
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@latest",
+    "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
   }
 }

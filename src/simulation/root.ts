@@ -55,7 +55,7 @@ export class Root {
       throw new Error(
         `cannot divide into < 1 mote Width:${w} Height:${h} / ${quadLength}`,
       );
-    this.chunks = new Array(length);
+    this.chunks = Array.from({ length });
     Logger.debug('Root:new', {
       x,
       y,

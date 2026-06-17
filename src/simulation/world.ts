@@ -22,10 +22,10 @@ export class World {
   constructor(w: number, h: number) {
     this._w = w;
     this._h = h;
-    const size = w * h;
-    this.motes = new Array(size);
+    const length = w * h;
+    this.motes = Array.from({ length });
     this.motes.fill(0);
-    Logger.debug('World:new', { w, h, size, v: this.motes });
+    Logger.debug('World:new', { w, h, length, v: this.motes });
   }
 
   // TODO: support generics for value
@@ -130,7 +130,11 @@ export class World {
       index = y * this._w + x;
     }
     this.motes[index] = value;
-    forceNext ? this.changes.push(index) : this.changes.unshift(index);
+    if (forceNext) {
+      this.changes.push(index);
+    } else {
+      this.changes.unshift(index);
+    }
     Logger.debug('World:set', {
       index,
       x,

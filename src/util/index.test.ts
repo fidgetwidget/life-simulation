@@ -1,6 +1,6 @@
 import { clampFail, getNeighbors, wrapAround } from '.';
 import { XY } from './XY';
-import { expect, describe, test } from 'vitest';
+import { expect, describe, test } from 'vite-plus/test';
 
 describe('clampFail', () => {
   test.each([0, 1, 2, 9, 10])('in range', (v) => {

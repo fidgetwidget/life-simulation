@@ -1,15 +1,6 @@
-import { Root, RootFactory, type RootParams } from './root';
+import { Root, RootFactory } from './root';
 import { XY } from '@/util/XY';
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  test,
-  vi,
-} from 'vitest';
+import { describe, expect, test } from 'vite-plus/test';
 
 describe.only('Root', () => {
   test.each([

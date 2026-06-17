@@ -1,15 +1,6 @@
 import { Chunk, ChunkFactory } from './chunk';
 import { Root, RootFactory } from './root';
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  test,
-  vi,
-} from 'vitest';
+import { describe, expect, test } from 'vite-plus/test';
 
 describe('Chunk', () => {
   test.each([

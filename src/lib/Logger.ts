@@ -12,6 +12,6 @@ export class Logger {
     console.error(...data);
   }
   public static debug(...data: any[]) {
-    __DEBUG__ && console.debug(...data);
+    if (__DEBUG__) console.debug(...data);
   }
 }

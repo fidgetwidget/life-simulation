@@ -1,15 +1,14 @@
-import { MOTE_COLOR_MAP } from '@/color-map.ts';
 import {
   TILE_SIZE,
   QUAD_DEPTH,
   HEIGHT,
   WIDTH,
   CHUNK_LINES_COLOR,
-  SIM_PER_TICK_CAP,
+  // SIM_PER_TICK_CAP,
   MAX_CHANGE_PER_TICK,
 } from '@/const.ts';
 import { HoverUI } from '@/debug/HoverUI.ts';
-import { Elements } from '@/elements.ts';
+import { Elements, MOTE_COLOR_MAP } from '@/elements.ts';
 import { Logger } from '@/lib/Logger.ts';
 import { World, QWorld } from '@/simulation';
 import { Simulation } from '@/simulation/simulation.ts';
@@ -39,9 +38,11 @@ export class Game {
 
   set paused(val: boolean) {
     this._paused = val;
-    val
-      ? this.eventTarget.dispatchEvent(PauseEvent)
-      : this.eventTarget.dispatchEvent(UnPauseEvent);
+    if (this._paused) {
+      this.eventTarget.dispatchEvent(PauseEvent);
+    } else {
+      this.eventTarget.dispatchEvent(UnPauseEvent);
+    }
   }
 
   constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
@@ -67,16 +68,18 @@ export class Game {
   }
 
   initTrees() {
-    this.qworld.setValue(24, 31, Elements.TREE_STUMP);
+    // TODO: change these to entities
+    this.qworld.setValue(24, 31, Elements.TREE);
 
-    this.qworld.setValue(23, 31, Elements.TREE_STUMP);
-    this.qworld.setValue(23, 30, Elements.TREE_STUMP);
+    this.qworld.setValue(23, 31, Elements.TREE);
+    this.qworld.setValue(23, 30, Elements.TREE);
 
-    this.qworld.setValue(25, 31, Elements.TREE_STUMP);
-    this.qworld.setValue(24, 32, Elements.TREE_STUMP);
+    this.qworld.setValue(25, 31, Elements.TREE);
+    this.qworld.setValue(24, 32, Elements.TREE);
   }
 
   initRiver() {
+    // TODO: Change this to an entity
     const setments = [
       ...getPointsAlongLine(
         XY(WIDTH - 5, 0),
@@ -110,7 +113,9 @@ export class Game {
     }
   }
 
-  handleMouseMove(event: MouseEvent) {
+  handleMouseMove(
+    // event: MouseEvent
+  ) {
     // TODO: determine the 'entity' (group of motes) the cursor is hovering over to provide contextual UI for.
   }
 

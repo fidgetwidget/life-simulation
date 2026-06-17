@@ -1,8 +1,8 @@
-import { MOTE_COLOR_MAP } from '../color-map';
-import { TILE_SIZE } from '../const';
-import { Logger } from '../lib/Logger';
-import type { QWorld } from '../simulation';
-import { Chunk } from '../simulation/chunk';
+import { MOTE_COLOR_MAP } from '@/elements';
+import { TILE_SIZE } from '@/const';
+import { Logger } from '@/lib/Logger';
+import type { QWorld } from '@/simulation';
+import { Chunk } from '@/simulation/chunk';
 import './HoverUI.css';
 
 export const CONTAINER_CLASS = 'hover-ui-container';

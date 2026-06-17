@@ -1,4 +1,4 @@
-import { Logger } from '../lib/Logger.ts';
+// import { Logger } from '../lib/Logger.ts';
 import { getNeighbors } from '../util';
 import { XY } from '../util/XY.ts';
 import { Root } from './root.ts';
@@ -23,7 +23,7 @@ export class Chunk {
   h: number;
   root: Root;
 
-  // for debugging
+  // @ts-expect-error used for debugging
   private _ncoords!: XY[];
 
   /**
@@ -98,7 +98,9 @@ export class Chunk {
   }
 
   public forceCache() {
+    // oxlint-disable-next-line no-unused-expressions
     this.coord;
+    // oxlint-disable-next-line no-unused-expressions
     this.neighbors;
   }
 

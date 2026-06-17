@@ -8,7 +8,7 @@ export const BehavioursGrowIntoAForest: Behaviour[] = [
       if (
         counts[Elements.GRASS] == null ||
         counts[Elements.GRASS] < values.length * 0.3 || // mostly grass
-        counts[Elements.TREE_STUMP] > 1 // no other trees
+        counts[Elements.TREE] > 1 // no other trees
       )
         return false;
       const hasTreeNeighbors = chunk.neighbors.reduce((acc, cur) => {
@@ -16,7 +16,7 @@ export const BehavioursGrowIntoAForest: Behaviour[] = [
         const worldIndexes = chunk.root.chunks[cur].indexes;
         const hasTree = worldIndexes.reduce((acc, cur) => {
           if (acc) return acc;
-          const hasTree = world.get(cur) === Elements.TREE_STUMP;
+          const hasTree = world.get(cur) === Elements.TREE;
           return hasTree;
         }, false);
         return hasTree;
@@ -27,7 +27,7 @@ export const BehavioursGrowIntoAForest: Behaviour[] = [
       const options = chunk.indexes.filter(
         (i) => world.get(i) === Elements.GRASS,
       );
-      world.set(pickRandom(options), Elements.TREE_STUMP);
+      world.set(pickRandom(options), Elements.SAPLING);
     },
   },
 ];

@@ -1,6 +1,6 @@
 import { camelToKebabCase } from './String';
 
-export const convertStyleObjectToString = (styleObject: Object) =>
+export const convertStyleObjectToString = (styleObject: object) =>
   Object.entries(styleObject)
     .map(([key, value]) => {
       const cssKey = camelToKebabCase(key);
