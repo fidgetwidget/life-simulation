@@ -3,7 +3,7 @@
 import { GrowFlowersInFields } from './grow-flowers-in-fields';
 import { GrowGrassInMeadows } from './grow-grass-in-meadows';
 import { GrowGrassNearTrees } from './grow-grass-near-trees';
-import { GrowRootsFromTrees } from './grow-roots-from-trees';
+// import { GrowRootsFromTrees } from "./grow-roots-from-trees";
 import { SpreadGrassOutFromMeadows } from './spread-grass-out-from-meadows';
 
 export const behaviours: Behaviour[] = [
@@ -11,7 +11,7 @@ export const behaviours: Behaviour[] = [
   // ...BehavioursGrowIntoAForest,
   GrowGrassInMeadows,
   GrowGrassNearTrees,
-  GrowRootsFromTrees,
+  // GrowRootsFromTrees,
   GrowFlowersInFields,
   SpreadGrassOutFromMeadows,
 ];

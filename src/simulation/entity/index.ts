@@ -5,9 +5,12 @@ import { XY } from '@/util';
 export class Entity {
   type: EntityType;
   origin: XY;
-  points: XY[] = [];
   world: QWorld;
   changed: boolean = false;
+
+  get points(): XY[] {
+    return this._points;
+  }
 
   get chunkOrigin(): number {
     const { x, y } = this.origin;
@@ -32,7 +35,12 @@ export class Entity {
     this.world = world;
   }
 
+  public addPoint(point: XY) {
+    this._points.push(point);
+  }
+
   public grow(): void {}
 
+  private _points: XY[] = [];
   private _chunks!: number[];
 }
