@@ -17,12 +17,19 @@ export class Simulation {
     for (let count = 0; count < SIM_PER_TICK_CAP; count++) {
       const chunk = this.qworld.root.chunks[this.curInx++];
       if (this.curInx >= this.qworld.root.chunks.length) this.curInx = 0;
-      this.simulate(chunk);
+      this.simulateChunk(chunk);
     }
   }
 
-  private simulate(chunk: Chunk) {
+  private simulateChunk(chunk: Chunk) {
     const world = this.world;
+
+    this.qworld.entities.forEach((e) => {
+      if (chunk.index === e.chunkOrigin) {
+        e.grow();
+      }
+    });
+
     const values = chunk.indexes.map((i) => world.get(i));
     const counts = values.reduce((acc: Record<number, number>, cur: number) => {
       if (acc[cur] === undefined) acc[cur] = 0;

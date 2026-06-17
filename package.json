@@ -14,12 +14,12 @@
   },
   "devDependencies": {
     "fps.ts": "^0.18.5",
+    "prando": "^6.0.1",
     "typescript": "~6.0.2",
     "vite": "npm:@voidzero-dev/vite-plus-core@latest",
-    "vite-plugin-oxlint": "^2.1.2",
+    "vite-plus": "latest",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "npm:@voidzero-dev/vite-plus-test@latest",
-    "vite-plus": "latest"
+    "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
   },
   "packageManager": "npm@11.17.0",
   "overrides": {

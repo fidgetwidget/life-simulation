@@ -1,7 +1,6 @@
 /// <reference types="vite-plus" />
 import { defineConfig } from 'vite-plus';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import oxlintPlugin from 'vite-plugin-oxlint';
 
 export default defineConfig({
   staged: {
@@ -22,5 +21,5 @@ export default defineConfig({
   define: {
     __DEBUG__: false, // true for dev, false for build
   },
-  plugins: [tsconfigPaths(), oxlintPlugin()],
+  plugins: [tsconfigPaths()],
 });

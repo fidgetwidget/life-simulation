@@ -4,7 +4,6 @@ import {
   HEIGHT,
   WIDTH,
   CHUNK_LINES_COLOR,
-  // SIM_PER_TICK_CAP,
   MAX_CHANGE_PER_TICK,
 } from '@/const.ts';
 import { HoverUI } from '@/debug/HoverUI.ts';
@@ -14,6 +13,7 @@ import { World, QWorld } from '@/simulation';
 import { Simulation } from '@/simulation/simulation.ts';
 import { XY } from '@/util';
 import { getPointsAlongLine } from '@/util/Line.ts';
+import { EntityTree } from './simulation/entity/tree';
 
 export enum GameEventTypes {
   Pause = 'pause',
@@ -69,13 +69,9 @@ export class Game {
 
   initTrees() {
     // TODO: change these to entities
-    this.qworld.setValue(24, 31, Elements.TREE);
-
-    this.qworld.setValue(23, 31, Elements.TREE);
-    this.qworld.setValue(23, 30, Elements.TREE);
-
-    this.qworld.setValue(25, 31, Elements.TREE);
-    this.qworld.setValue(24, 32, Elements.TREE);
+    this.qworld.addEntity(new EntityTree(XY(24, 31), this.qworld));
+    this.qworld.addEntity(new EntityTree(XY(12, 10), this.qworld));
+    this.qworld.addEntity(new EntityTree(XY(34, 16), this.qworld));
   }
 
   initRiver() {

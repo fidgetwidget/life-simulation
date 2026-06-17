@@ -1,7 +1,9 @@
 import type { Chunk } from './chunk';
+import type { Entity } from './entity';
 import { Root } from './root';
 import { World } from './world';
 import { Logger } from '@/lib/Logger';
+import { XY } from '@/util';
 
 /**
  * Provide an interface to a World with Quads/Chunks.
@@ -11,10 +13,26 @@ import { Logger } from '@/lib/Logger';
 export class QWorld {
   public world: World;
   public root: Root;
+  public entities: Entity[];
+
+  get min() {
+    if (!this._min) {
+      this._min = Object.freeze(XY(0, 0));
+    }
+    return this._min;
+  }
+
+  get max() {
+    if (!this._max) {
+      this._max = Object.freeze(XY(this.world.w, this.world.h));
+    }
+    return this._max;
+  }
 
   constructor(w: number, h: number, depth: number) {
     this.world = new World(w, h);
     this.root = new Root(0, 0, w, h, depth);
+    this.entities = [];
   }
 
   get hasChanges(): boolean {
@@ -66,6 +84,10 @@ export class QWorld {
     this.world.set(x, y, v, forceNext);
   }
 
+  addEntity(entity: Entity): void {
+    this.entities.push(entity);
+  }
+
   // TODO: look at ways to limit the world changes in smarter ways
   /**
    * get the next change from the world.
@@ -76,4 +98,7 @@ export class QWorld {
     Logger.debug('QWorld.process', { i, x, y, v });
     return { i, x, y, v };
   }
+
+  private _min!: XY;
+  private _max!: XY;
 }

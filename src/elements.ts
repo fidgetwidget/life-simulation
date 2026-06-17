@@ -2,8 +2,9 @@ export enum Elements {
   EMPTY = 0,
 
   SAPLING = 5,
-  TREE = 6,
-  ROOTS = 8,
+  TREE_TRUNK = 6,
+  TREE = 7,
+  ROOTS = 10,
 
   GRASS = 20,
   TALL_GRASS = 21,
@@ -18,8 +19,9 @@ export const MOTE_COLOR_MAP: Record<number, string> = {
   [Elements.EMPTY]: '#fdebb6',
 
   [Elements.SAPLING]: '#9bff9d',
-  [Elements.TREE]: '#756957',
-  [Elements.ROOTS]: '#77745f',
+  [Elements.TREE_TRUNK]: '#4f4536',
+  [Elements.TREE]: '#6d604d',
+  [Elements.ROOTS]: '#848275',
 
   [Elements.GRASS]: '#83a561',
   [Elements.TALL_GRASS]: '#6b9244',
