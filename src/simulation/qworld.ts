@@ -2,7 +2,7 @@ import type { Chunk } from './chunk';
 import type { Entity } from './entity';
 import { Root } from './root';
 import { World } from './world';
-import { Logger } from '@/lib/Logger';
+// import { Logger } from "@/lib/Logger";
 import { XY } from '@/util';
 
 /**
@@ -125,7 +125,6 @@ export class QWorld {
   getChunkAtWorld(x: number, y: number): Chunk {
     const lx = Math.floor(x / this.root.chunkWidth);
     const ly = Math.floor(y / this.root.chunkHeight);
-    Logger.debug('QWorld:getChunkAtWorld', { x, y, lx, ly });
     return this.getChunkAtLocal(lx, ly);
   }
 
@@ -133,14 +132,12 @@ export class QWorld {
     this.entities.push(entity);
   }
 
-  // TODO: look at ways to limit the world changes in smarter ways
   /**
    * get the next change from the world.
    */
   process(): null | QuadData {
     if (!this.hasChanges) return null;
     const { i, x, y, v } = this.world.process()!;
-    Logger.debug('QWorld.process', { i, x, y, v });
     return { i, x, y, v };
   }
 

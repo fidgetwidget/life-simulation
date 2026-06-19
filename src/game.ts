@@ -8,7 +8,7 @@ import {
 } from '@/const.ts';
 import { HoverUI } from '@/debug/HoverUI.ts';
 import { Elements, MOTE_COLOR_MAP } from '@/elements.ts';
-import { Logger } from '@/lib/Logger.ts';
+// import { Logger } from "@/lib/Logger.ts";
 import { QWorld } from '@/simulation';
 import { Simulation } from '@/simulation/simulation.ts';
 import { XY } from '@/util';
@@ -62,18 +62,18 @@ export class Game {
 
     this.initPaint();
     this.renderQuads();
-    console.debug('game:init', { qworld: this.qworld });
+
+    this.flushRender();
   }
 
   initTrees() {
-    // TODO: change these to entities
     this.qworld.addEntity(new Tree(XY(24, 31), this.qworld));
     this.qworld.addEntity(new Tree(XY(12, 10), this.qworld));
     this.qworld.addEntity(new Tree(XY(34, 16), this.qworld));
   }
 
   initRiver() {
-    // TODO: Change this to an entity
+    // TODO: Change this to an entity that randomly splits/turns and supports varying widths.
     const setments = [
       ...getPointsAlongLine(
         XY(WIDTH - 5, 0),
@@ -95,28 +95,21 @@ export class Game {
 
   attachEventListeners() {
     document.addEventListener('keyup', this.handleKeyUp.bind(this));
-    this.canvas.addEventListener('mousemove', this.handleMouseMove.bind(this));
+    // this.canvas.addEventListener("mousemove", this.handleMouseMove.bind(this));
     this.canvas.addEventListener('click', this.handleMouseClick.bind(this));
   }
 
   handleKeyUp(event: KeyboardEvent) {
-    console.info(event);
     switch (event.key.toUpperCase()) {
       case ' ':
+      case 'P':
         this.paused = !this.paused;
         break;
     }
   }
 
-  handleMouseMove(
-    // event: MouseEvent
-  ) {
-    // TODO: determine the 'entity' (group of motes) the cursor is hovering over to provide contextual UI for.
-  }
-
   handleMouseClick(event: MouseEvent) {
     const { clientX, clientY } = event;
-    Logger.debug('click', XY(clientX, clientY));
     const rect: DOMRect = this.canvas.getBoundingClientRect();
     const canvasx = clientX - rect.left;
     const canvasy = clientY - rect.top;
@@ -173,8 +166,18 @@ export class Game {
 
       this.ctx.fillStyle = color;
       this.ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-      this.ctx.strokeStyle = 'green';
       count++;
+    }
+  }
+
+  flushRender() {
+    while (this.qworld.hasChanges) {
+      const { x, y, v } = this.qworld.process()!;
+      // @ts-ignore - the MOTE_COLOR_MAP won't ever exactly map to the changes data type
+      const color = MOTE_COLOR_MAP[v];
+
+      this.ctx.fillStyle = color;
+      this.ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
   }
 

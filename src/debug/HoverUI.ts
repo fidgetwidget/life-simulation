@@ -4,8 +4,16 @@ import { Logger } from '@/lib/Logger';
 import type { QWorld } from '@/simulation';
 import { Chunk } from '@/simulation/chunk';
 import './HoverUI.css';
+import type { Entity } from '@/simulation/entity';
 
 export const CONTAINER_CLASS = 'hover-ui-container';
+
+type DebugData = {
+  chunk: Chunk;
+  values: number[];
+  valueRecords: Record<number, number>;
+  entities: Entity[];
+};
 
 export class HoverUI {
   canvas: HTMLCanvasElement;
@@ -13,6 +21,7 @@ export class HoverUI {
   chunk?: Chunk;
   active: boolean = false;
   visible: boolean = __DEBUG__;
+  debugUI: any;
 
   public dom: HTMLDivElement;
 
@@ -20,11 +29,17 @@ export class HoverUI {
     this.canvas = canvas;
     this.qworld = qworld;
     this.chunk = undefined;
+    this.debugUI = {
+      chunkIndex: -1,
+      chunk: null,
+      entities: null,
+    };
     this.dom = document.createElement('div');
     this.dom.classList.add('hover-ui');
 
     this.attachEventListeners();
     console.debug('HoverUi:new');
+    (window as any).DebugUI = this.debugUI;
   }
 
   public show() {
@@ -39,6 +54,15 @@ export class HoverUI {
     this.canvas.addEventListener('mousemove', this.handleMouseMove.bind(this));
     this.canvas.addEventListener('mouseover', this.handleMouseOver.bind(this));
     this.canvas.addEventListener('mouseout', this.handleMouseOut.bind(this));
+    // Lets you push to logs the info currently in the debugUI data.
+    document.addEventListener('keyup', (e: KeyboardEvent) => {
+      switch (e.key.toUpperCase()) {
+        case 'L':
+          Logger.info('LOG: ', structuredClone(this.debugUI));
+          Logger.info('dump: ', { qworld: this.qworld });
+          break;
+      }
+    });
   }
 
   handleMouseMove(event: MouseEvent) {
@@ -49,7 +73,6 @@ export class HoverUI {
     // x,y position on the canvas to world x,y
     const wx = Math.floor(canvasx / TILE_SIZE);
     const wy = Math.floor(canvasy / TILE_SIZE);
-    console.debug('HoverUi:handleMouseMove', { canvasx, canvasy, wx, wy });
     const chunk = this.qworld.getChunkAtWorld(wx, wy);
 
     this.updateChunk(chunk);
@@ -57,27 +80,29 @@ export class HoverUI {
 
   handleMouseOver() {
     this.active = true;
-    console.debug('HoverUi:handleMouseOver');
     if (this.dom.classList.contains('hide')) this.dom.classList.remove('hide');
   }
 
   handleMouseOut() {
     this.active = false;
     this.chunk = undefined;
-    console.debug('HoverUi:handleMouseOut');
     if (!this.dom.classList.contains('hide')) this.dom.classList.add('hide');
   }
 
   updateChunk(chunk?: Chunk) {
-    console.debug('HoverUi:updateChunk', { chunk, index: chunk?.index });
     if (this.chunk?.index === chunk?.index) return;
 
     this.chunk = chunk;
-    this.updateDom();
+    const data = this.updateData();
+    this.updateDom(data);
   }
 
-  updateDom() {
-    const values = this.chunk?.indexes.map((i) => this.qworld.getValue(i));
+  updateData(): DebugData {
+    const chunk = this.chunk!;
+    const entities = this.qworld.entities.filter((e) => {
+      chunk.index === e.chunkOrigin;
+    });
+    const values = chunk.indexes.map((i) => this.qworld.getValue(i));
     const valueRecords: Record<number, number> =
       values?.reduce((acc: Record<number, number>, cur: number) => {
         if (acc[cur] === undefined) {
@@ -86,19 +111,27 @@ export class HoverUI {
         acc[cur] += 1;
         return acc;
       }, {}) ?? {};
+    const data = {
+      chunk,
+      values,
+      valueRecords,
+      entities,
+    };
+    this.debugUI.chunkIndex = chunk?.index ?? -1;
+    this.debugUI.chunk = chunk;
+    this.debugUI.entities = entities;
+    return data;
+  }
+
+  updateDom({ chunk, values, valueRecords, entities }: DebugData) {
     const rect: DOMRect = this.canvas.getBoundingClientRect();
-    const cx = this.chunk?.x ?? 0;
-    const cy = this.chunk?.y ?? 0;
-    const cw = this.chunk?.w ?? 0;
-    const ch = this.chunk?.h ?? 0;
-    const x = cx * TILE_SIZE + rect.left;
-    const y = cy * TILE_SIZE + rect.top;
-    const w = cw * TILE_SIZE;
-    const h = ch * TILE_SIZE;
-    const scrollx = document.scrollingElement?.scrollLeft ?? 0;
-    const scrolly = document.scrollingElement?.scrollTop ?? 0;
+    const scroll = {
+      x: document.scrollingElement?.scrollLeft ?? 0,
+      y: document.scrollingElement?.scrollTop ?? 0,
+    };
+    const { w, h, top, left } = getPosition(rect, scroll, chunk);
+
     const count = values?.length ?? 0;
-    Logger.info('HoverUi:updateDom', { x, y, cx, cy, scrollx, scrolly, rect });
 
     // TODO: move this to a template or something to be better managed/maintained...
     this.dom.innerHTML = `
@@ -106,11 +139,15 @@ export class HoverUI {
         <ul class='hover-ui-list'>
             <li>
                 <label>index</label>
-                <span>${this.chunk?.index}</span>
+                <span>${chunk?.index}</span>
             </li>
             <li>
                 <label>type</label>
                 <span>${'unknown'}</span>
+            </li>
+            <li>
+                <label>entity count</label>
+                <span>${entities.length}</span>
             </li>
             <li>
                 <label>values</label>
@@ -133,8 +170,22 @@ export class HoverUI {
     </div>
     <div
         class='hover-ui-chunk-highlight'
-        style="width: ${w}px; height: ${h}px; left: ${x - scrollx}px; top: ${y - scrolly}px;"
+        style="width: ${w}px; height: ${h}px; left: ${left}px; top: ${top}px;"
     ></div>
     `;
   }
+}
+
+function getPosition(rect: DOMRect, scroll: XY, chunk: Chunk) {
+  const cx = chunk.x;
+  const cy = chunk.y;
+  const cw = chunk.w;
+  const ch = chunk.h;
+  const x = cx * TILE_SIZE + rect.left;
+  const y = cy * TILE_SIZE + rect.top;
+  const w = cw * TILE_SIZE;
+  const h = ch * TILE_SIZE;
+  const left = x - scroll.x;
+  const top = y - scroll.y;
+  return { w, h, top, left };
 }

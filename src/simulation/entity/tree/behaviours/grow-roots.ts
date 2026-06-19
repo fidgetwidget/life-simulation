@@ -1,7 +1,8 @@
 import { Elements } from '@/elements';
 import type { TreeBehaviour } from '../type';
 import { filterInPlace, getNeighbors, pickRandom } from '@/util';
-import { Logger } from '@/lib/Logger';
+
+const CAN_GROW_ON = [Elements.EMPTY, Elements.GRASS, Elements.TALL_GRASS];
 
 export const GrowRoots: TreeBehaviour = {
   filter: ({ tree }) => tree.growth > 3 && tree.roots < 5,
@@ -17,13 +18,10 @@ export const GrowRoots: TreeBehaviour = {
       ncoords,
       (coord) =>
         !points.includes(coord) &&
-        [Elements.EMPTY, Elements.GRASS, Elements.TALL_GRASS].includes(
-          world.getValue(coord.x, coord.y),
-        ),
+        CAN_GROW_ON.includes(world.getValue(coord.x, coord.y)),
     );
     if (ncoords.length === 0) return;
     const point = pickRandom(ncoords);
-    Logger.info('GrowRoots', { point });
     tree.addPoint(point, Elements.ROOTS);
   },
 };

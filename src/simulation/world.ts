@@ -144,14 +144,6 @@ export class World {
     } else {
       this.changes.unshift(index);
     }
-    // Logger.debug('World:set', {
-    //   index,
-    //   x,
-    //   y,
-    //   value,
-    //   force: forceNext,
-    //   changes: JSON.stringify(this.changes),
-    // });
   }
 
   process() {

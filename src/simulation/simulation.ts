@@ -1,6 +1,6 @@
 import { behaviours } from './behaviours';
 import type { QWorld } from './qworld';
-import { SIM_PER_TICK_CAP } from '@/const';
+import { MAX_CHUNKS_PER_TICK } from '@/const';
 
 export class Simulation {
   qworld: QWorld;
@@ -11,7 +11,7 @@ export class Simulation {
   }
 
   public tick() {
-    for (let count = 0; count < SIM_PER_TICK_CAP; count++) {
+    for (let count = 0; count < MAX_CHUNKS_PER_TICK; count++) {
       const chunk = this.qworld.getChunk(this.curInx++);
       if (this.curInx >= this.qworld.chunkCount) this.curInx = 0;
       this.simulateChunk(chunk);
@@ -20,13 +20,7 @@ export class Simulation {
 
   private simulateChunk(chunk: Chunk) {
     const { qworld } = this;
-
-    qworld.entities.forEach((e) => {
-      if (chunk.index === e.chunkOrigin) {
-        e.grow();
-      }
-    });
-
+    qworld.entities.forEach((e) => chunk.index === e.chunkOrigin && e.grow());
     const values = chunk.indexes.map((i) => qworld.getValue(i));
     const counts = values.reduce((acc: Record<number, number>, cur: number) => {
       if (acc[cur] === undefined) acc[cur] = 0;
@@ -37,11 +31,9 @@ export class Simulation {
     // NOTE: This pattern is less efficient than doing the filtering and acting in one loop
     //  but this is better for debugging.
     // TODO: have a debug vs build version of this for speed reasons.
-    const actionable = behaviours.filter(({ filter }) =>
-      filter({ qworld, chunk, values, counts }),
+    behaviours.forEach(
+      ({ filter, action }) =>
+        filter({ qworld, chunk, values, counts }) && action({ qworld, chunk }),
     );
-    actionable.forEach(({ action }) => action({ qworld, chunk }));
-
-    return actionable.length > 0 ? chunk : null;
   }
 }

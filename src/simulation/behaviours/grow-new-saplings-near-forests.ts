@@ -1,7 +1,7 @@
 import { Elements } from '@/elements';
 import { pickRandom } from '@/util';
 import { Tree } from '../entity/tree';
-import { Logger } from '@/lib/Logger';
+// import { Logger } from "@/lib/Logger";
 
 export const GrowNewSaplingsNearForests: WorldBehaviour = {
   // has enough grass
@@ -11,9 +11,8 @@ export const GrowNewSaplingsNearForests: WorldBehaviour = {
       (counts[Elements.SAPLING] == null || counts[Elements.SAPLING] === 0)
     );
   },
-  // maybe grow a flower
+  // TODO: ensure the distance between an existing tree gives enough room for the tree to grow a min of 3 tiles range.
   action: ({ qworld, chunk }) => {
-    Logger.info('GrowNewSaplingsNearForests:action');
     const neighbors = chunk.neighbors;
     const hasTreeNeighbor = neighbors.reduce((acc, cur) => {
       if (acc) return acc;
