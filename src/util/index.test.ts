@@ -1,4 +1,4 @@
-import { clampFail, getNeighbors, getNeighborsAtRange, wrapAround } from '.';
+import { clampFail, getCirclePoints, getNeighbors, wrapAround } from '.';
 import { XY } from './XY';
 import { expect, describe, test } from 'vite-plus/test';
 
@@ -97,20 +97,20 @@ describe('Neighbors', () => {
   });
 
   describe('getNeighborsAtRange', () => {
-    const MIN = XY(-10, -10);
-    const MAX = XY(10, 10);
-
     //  +----------------------+
     //  | -1,-1 |  0,-1 | 1,-1 |
     //  | -1, 0 |  0, 0 | 1, 0 |
     //  | -1, 1 |  0, 1 | 1, 1 |
     //  +----------------------+
     test.each`
-      name     | coord       | range | results
-      ${'0,0'} | ${XY(0, 0)} | ${1}  | ${[XY(-1, 0), XY(0, -1), XY(0, 1), XY(1, 0)]}
-      ${'0,0'} | ${XY(0, 0)} | ${2}  | ${[XY(-2, 0), XY(-1, -1), XY(-1, 0), XY(-1, 1), XY(0, -2), XY(0, -1), XY(0, 1), XY(0, 2), XY(1, -1), XY(1, 0), XY(1, 1), XY(2, 0)]}
-    `('$name : $range', ({ coord, range, results }) => {
-      expect(getNeighborsAtRange(coord, range, MIN, MAX)).toEqual(results);
+      name     | coord       | range  | count | results
+      ${'0,0'} | ${XY(0, 0)} | ${1}   | ${4}  | ${[XY(-1, 0), XY(1, 0), XY(0, -1), XY(0, 1)]}
+      ${'0,0'} | ${XY(0, 0)} | ${1.5} | ${8}  | ${[XY(-1, 0), XY(1, 0), XY(0, -1), XY(0, 1), XY(-1, 1), XY(1, 1), XY(-1, -1), XY(1, -1)]}
+      ${'0,0'} | ${XY(0, 0)} | ${2}   | ${8}  | ${[XY(-2, 0), XY(2, 0), XY(0, -2), XY(0, 2), XY(-1, 1), XY(1, 1), XY(-1, -1), XY(1, -1)]}
+    `('$name : $range', ({ coord, range, count, results }) => {
+      const actual = getCirclePoints(coord, range);
+      expect(actual.length).toBe(count);
+      expect(actual).toEqual(results);
     });
   });
 });

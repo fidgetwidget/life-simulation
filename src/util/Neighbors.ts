@@ -1,3 +1,4 @@
+import { filterInPlace } from './Array';
 import { wrapAround, clampFail } from './Math';
 import { XY } from './XY';
 
@@ -45,31 +46,30 @@ export function getNeighbors(
   return all.filter((coord) => coord.x != null && coord.y != null) as XY[];
 }
 
-export function getNeighborsAtRange(
-  center: XY,
-  radius: number,
-  min: XY,
-  max: XY,
-  out: XY[] = [],
-) {
+// using drawBresenhamCircle as a reference
+// https://www.redblobgames.com/grids/circle-drawing/
+export function getCirclePoints(center: XY, radius: number, out: XY[] = []) {
   const { x: cx, y: cy } = center;
-  const rSquared = radius * radius;
-  const minX = Math.max(Math.floor(cx - radius), min.x);
-  const minY = Math.max(Math.floor(cy - radius), min.y);
-  const maxX = Math.min(Math.ceil(cx + radius), max.x);
-  const maxY = Math.min(Math.ceil(cy + radius), max.y);
-
-  for (let x = minX; x <= maxX; x++) {
-    for (let y = minY; y <= maxY; y++) {
-      const dx = x - cx;
-      const dy = y - cy;
-      const dSquared = dx * dx + dy * dy;
-      if (dSquared <= rSquared) {
-        // Don't add center to the results
-        if (!(dx === cx && dy === cy)) out.push(XY(dx, dy));
-      }
-    }
+  const rl = Math.floor(radius * Math.sqrt(0.5));
+  for (let r = 0; r <= rl; r++) {
+    let d = Math.floor(Math.sqrt(radius * radius - r * r));
+    out.push(
+      XY(cx - d, cy + r),
+      XY(cx + d, cy + r),
+      XY(cx - d, cy - r),
+      XY(cx + d, cy - r),
+      XY(cx + r, cy - d),
+      XY(cx + r, cy + d),
+      XY(cx - r, cy - d),
+      XY(cx - r, cy + d),
+    );
   }
 
-  return out;
+  // ensures that only the first time a coord appears is kept
+  return filterInPlace(
+    out,
+    (point, index, arr) =>
+      arr.findIndex((p) => p.x === point.x && p.y === point.y) === index,
+  );
+  // TODO: sort these into clockwise from left (like the neighbors result)
 }

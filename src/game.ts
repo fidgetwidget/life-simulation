@@ -9,11 +9,11 @@ import {
 import { HoverUI } from '@/debug/HoverUI.ts';
 import { Elements, MOTE_COLOR_MAP } from '@/elements.ts';
 import { Logger } from '@/lib/Logger.ts';
-import { World, QWorld } from '@/simulation';
+import { QWorld } from '@/simulation';
 import { Simulation } from '@/simulation/simulation.ts';
 import { XY } from '@/util';
 import { getPointsAlongLine } from '@/util/Line.ts';
-import { EntityTree } from './simulation/entity/tree';
+import { Tree } from './simulation/entity/tree';
 
 export enum GameEventTypes {
   Pause = 'pause',
@@ -25,7 +25,6 @@ const UnPauseEvent = new Event(GameEventTypes.UnPause);
 export class Game {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-  world: World;
   qworld: QWorld;
   sim: Simulation;
   changes: QuadData[];
@@ -49,7 +48,6 @@ export class Game {
     this.canvas = canvas;
     this.ctx = ctx;
     this.qworld = new QWorld(WIDTH, HEIGHT, QUAD_DEPTH);
-    this.world = this.qworld.world;
     this.sim = new Simulation(this.qworld);
     this.changes = [];
 
@@ -64,14 +62,14 @@ export class Game {
 
     this.initPaint();
     this.renderQuads();
-    console.debug('game:init', { world: this.world, qworld: this.qworld });
+    console.debug('game:init', { qworld: this.qworld });
   }
 
   initTrees() {
     // TODO: change these to entities
-    this.qworld.addEntity(new EntityTree(XY(24, 31), this.qworld));
-    this.qworld.addEntity(new EntityTree(XY(12, 10), this.qworld));
-    this.qworld.addEntity(new EntityTree(XY(34, 16), this.qworld));
+    this.qworld.addEntity(new Tree(XY(24, 31), this.qworld));
+    this.qworld.addEntity(new Tree(XY(12, 10), this.qworld));
+    this.qworld.addEntity(new Tree(XY(34, 16), this.qworld));
   }
 
   initRiver() {
@@ -102,8 +100,9 @@ export class Game {
   }
 
   handleKeyUp(event: KeyboardEvent) {
+    console.info(event);
     switch (event.key.toUpperCase()) {
-      case 'P':
+      case ' ':
         this.paused = !this.paused;
         break;
     }
@@ -142,7 +141,7 @@ export class Game {
   }
 
   renderQuads() {
-    this.qworld.root.chunks.forEach((c) => {
+    this.qworld.chunks.forEach((c) => {
       this.ctx.strokeStyle = CHUNK_LINES_COLOR;
       let { x, y, w, h } = c;
       x *= TILE_SIZE;

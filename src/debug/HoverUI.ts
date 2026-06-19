@@ -77,7 +77,7 @@ export class HoverUI {
   }
 
   updateDom() {
-    const values = this.chunk?.indexes.map((i) => this.qworld.world.get(i));
+    const values = this.chunk?.indexes.map((i) => this.qworld.getValue(i));
     const valueRecords: Record<number, number> =
       values?.reduce((acc: Record<number, number>, cur: number) => {
         if (acc[cur] === undefined) {

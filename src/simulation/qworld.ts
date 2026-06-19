@@ -11,8 +11,8 @@ import { XY } from '@/util';
  * TODO: add set methods that impact multiple motes at once (point + radius around it, and point to point lines)
  */
 export class QWorld {
-  public world: World;
-  public root: Root;
+  private world: World;
+  private root: Root;
   public entities: Entity[];
 
   get min() {
@@ -29,6 +29,14 @@ export class QWorld {
     return this._max;
   }
 
+  get chunkCount() {
+    return this.root.chunks.length;
+  }
+
+  get chunks() {
+    return this.root.chunks;
+  }
+
   constructor(w: number, h: number, depth: number) {
     this.world = new World(w, h);
     this.root = new Root(0, 0, w, h, depth);
@@ -37,6 +45,14 @@ export class QWorld {
 
   get hasChanges(): boolean {
     return this.world.hasChanges;
+  }
+
+  getIndex(x: number, y: number): number {
+    return this.world.getIndex(x, y);
+  }
+
+  getXY(index: number): XY {
+    return this.world.getXY(index);
   }
 
   /**
@@ -48,8 +64,45 @@ export class QWorld {
    */
   getValue(x: number, y: number): number;
 
-  getValue(x: number, y?: number): number {
-    return y === undefined ? this.world.get(x) : this.world.get(x, y);
+  getValue(): number {
+    const [index, y] = arguments;
+    return this.world.get(index, y);
+  }
+
+  /**
+   * set the world value via index.
+   */
+  setValue(index: number, value: number, forceNext?: boolean): void;
+  /**
+   * set the world value via x, y coord index.
+   */
+  setValue(x: number, y: number, value: number, forceNext?: boolean): void;
+
+  setValue(): void {
+    const [index, y, v, forceNext] = arguments;
+    this.world.set(index, y, v, forceNext);
+  }
+
+  getNeighborValues(index: number, eightWay?: boolean): number[];
+  getNeighborValues(x: number, y: number, eightWay?: boolean): number[];
+
+  getNeighborValues(): number[] {
+    const [x, y, eightWay] = arguments;
+    return this.world.getNeighborValues(x, y, eightWay);
+  }
+
+  getNeighbors(index: number, eightWay?: boolean, wrap?: boolean): number[];
+  getNeighbors(
+    x: number,
+    y: number,
+    eightWay?: boolean,
+    wrap?: boolean,
+  ): number[];
+
+  // get the neighbors values for a given index.
+  getNeighbors(): number[] {
+    const [x, y, eightWay, wrap] = arguments;
+    return this.world.getNeighbors(x, y, eightWay, wrap);
   }
 
   /**
@@ -74,14 +127,6 @@ export class QWorld {
     const ly = Math.floor(y / this.root.chunkHeight);
     Logger.debug('QWorld:getChunkAtWorld', { x, y, lx, ly });
     return this.getChunkAtLocal(lx, ly);
-  }
-
-  // TODO: update this to support the same syntax as world (support index OR x, y)
-  /**
-   * set the world value.
-   */
-  setValue(x: number, y: number, v: number, forceNext = false): void {
-    this.world.set(x, y, v, forceNext);
   }
 
   addEntity(entity: Entity): void {

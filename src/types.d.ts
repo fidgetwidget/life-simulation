@@ -1,4 +1,5 @@
 type World = import('./simulation/world').World;
+type QWorld = import('./simulation/qworld').QWorld;
 type Chunk = import('./simulation/chunk').Chunk;
 type Element = import('./elements').Elements;
 type XY = import('./util/XY').XY;
@@ -12,19 +13,19 @@ type QuadData = {
   v: number;
 };
 
-type BehaviourFilterProps = {
-  world: World;
+type WorldBehaviourFilterProps = {
+  qworld: QWorld;
   chunk: Chunk;
   values: number[];
   counts: Record<Elements, number>;
 };
 
-type BehaviourActionProps = {
-  world: World;
+type WorldBehaviourActionProps = {
+  qworld: QWorld;
   chunk: Chunk;
 };
 
-type Behaviour = {
-  filter: (props: BehaviourFilterProps) => boolean;
-  action: (props: BehaviourActionProps) => void;
+type WorldBehaviour = {
+  filter: (props: WorldBehaviourFilterProps) => boolean;
+  action: (props: WorldBehaviourActionProps) => void;
 };

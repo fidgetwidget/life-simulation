@@ -1,21 +1,19 @@
 import { Elements } from '@/elements';
 import { pickRandom } from '@/util';
 
-export const SpreadGrassOutFromMeadows: Behaviour = {
+export const SpreadGrassOutFromMeadows: WorldBehaviour = {
   // has a tree and enough grass
-  filter: ({ values, counts }) =>
-    values.includes(Elements.TREE) &&
-    counts[Elements.GRASS] > values.length * 0.25,
+  filter: ({ values, counts }) => counts[Elements.GRASS] > values.length * 0.25,
   // spread grass beyond the chunk
-  action: ({ world, chunk }) => {
+  action: ({ qworld, chunk }) => {
     const neighbors = chunk.neighbors;
     const nci = pickRandom(neighbors);
     const nchunk = chunk.root.chunks[nci];
-    // TODO: have chunks keep a 'state' based on their composition
-    //  to make checking/rejecting faster.
-    const indexes = nchunk.indexes;
-    const empties = indexes.filter((i) => world.get(i) === Elements.EMPTY);
+    // TODO: have chunks keep a 'state' based on their composition to make checking/rejecting faster
+    const empties = nchunk.indexes.filter(
+      (i) => qworld.getValue(i) === Elements.EMPTY,
+    );
     if (empties.length === 0 || empties.length < 5) return;
-    world.set(pickRandom(empties), Elements.GRASS);
+    qworld.setValue(pickRandom(empties), Elements.GRASS);
   },
 };

@@ -19,6 +19,7 @@ export class World {
     return this.changes.length > 0;
   }
 
+  // TODO: support generics for value
   constructor(w: number, h: number) {
     this._w = w;
     this._h = h;
@@ -28,7 +29,15 @@ export class World {
     Logger.debug('World:new', { w, h, length, v: this.motes });
   }
 
-  // TODO: support generics for value
+  getIndex(x: number, y: number): number {
+    return y * this.w + x;
+  }
+
+  getXY(index: number): XY {
+    const y = Math.floor(index / this.w);
+    const x = Math.floor(index % this.w);
+    return XY(x, y);
+  }
 
   /**
    * get value via index.
@@ -41,7 +50,7 @@ export class World {
 
   get(index: number, y?: number): number {
     if (y !== undefined) {
-      index = y * this._w + index;
+      index = y * this.w + index;
     }
     return this.motes[index];
   }
@@ -58,14 +67,14 @@ export class World {
     if (y === undefined || typeof y === 'boolean') {
       if (typeof y === 'boolean') eightWay = y;
       index = x;
-      y = Math.floor(index / this._w);
-      x = Math.floor(index % this._w);
+      y = Math.floor(index / this.w);
+      x = Math.floor(index % this.w);
     } else {
       // x, y and eightWay are already assigned to the correct name
-      index = y * this._w + x;
+      index = y * this.w + x;
     }
     const min = XY.Zero;
-    const max = XY(this._w - 1, this._h - 1);
+    const max = XY(this.w - 1, this.h - 1);
     const coords = getNeighbors(XY(x, y), min, max, false, eightWay);
     return coords.map(({ x, y }) => this.get(x, y));
   }
@@ -91,17 +100,17 @@ export class World {
       wrap = eightWay === undefined ? false : eightWay;
       eightWay = y === undefined ? true : y;
       index = x;
-      x = Math.floor(index % this._w);
-      y = Math.floor(index / this._w);
+      x = Math.floor(index % this.w);
+      y = Math.floor(index / this.w);
     } else {
       if (eightWay === undefined) eightWay = true;
-      index = y * this._w + x;
+      index = y * this.w + x;
     }
     const min = XY.Zero;
-    const max = XY(this._w - 1, this._h - 1);
+    const max = XY(this.w - 1, this.h - 1);
     const coords = getNeighbors({ x, y }, min, max, wrap, eightWay);
-    Logger.debug('getNeighborsAt', { x, y, min, max, coords });
-    return coords.map(({ x, y }) => y * this._w + x);
+    // Logger.debug("getNeighborsAt", { x, y, min, max, coords });
+    return coords.map(({ x, y }) => y * this.w + x);
   }
 
   /**
@@ -121,13 +130,13 @@ export class World {
     if (v === undefined || typeof v === 'boolean') {
       if (typeof v === 'boolean') forceNext = v;
       value = y;
-      x = Math.floor(index % this._w);
-      y = Math.floor(index / this._w);
+      x = Math.floor(index % this.w);
+      y = Math.floor(index / this.w);
     } else {
       // y and forceNext are already assigned to the correct name
       x = index;
       value = v;
-      index = y * this._w + x;
+      index = y * this.w + x;
     }
     this.motes[index] = value;
     if (forceNext) {
@@ -135,23 +144,23 @@ export class World {
     } else {
       this.changes.unshift(index);
     }
-    Logger.debug('World:set', {
-      index,
-      x,
-      y,
-      value,
-      force: forceNext,
-      changes: JSON.stringify(this.changes),
-    });
+    // Logger.debug('World:set', {
+    //   index,
+    //   x,
+    //   y,
+    //   value,
+    //   force: forceNext,
+    //   changes: JSON.stringify(this.changes),
+    // });
   }
 
   process() {
     if (!this.hasChanges) return null;
     const i = this.changes.pop()!;
-    const x = Math.floor(i % this._w);
-    const y = Math.floor(i / this._w);
+    const x = Math.floor(i % this.w);
+    const y = Math.floor(i / this.w);
     const v = this.motes[i];
-    Logger.debug('world:process', { x, y, i, v });
+    // Logger.debug("world:process", { x, y, i, v });
     return { i, x, y, v };
   }
 }
