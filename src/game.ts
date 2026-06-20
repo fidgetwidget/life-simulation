@@ -13,6 +13,7 @@ import { QWorld } from '@/simulation';
 import { Simulation } from '@/simulation/simulation.ts';
 import { XY } from '@/util';
 import { getPointsAlongLine } from '@/util/Line.ts';
+
 import { Tree } from './simulation/entity/tree';
 
 export enum GameEventTypes {

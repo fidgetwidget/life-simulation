@@ -1,13 +1,14 @@
-import type { QWorld } from '../../qworld';
-import { EntityType } from '../type';
-import { Entity } from '..';
+import { Elements } from '@/elements';
 // import { d20 } from "@/util/Random";
 import { XY } from '@/util';
-import { Elements } from '@/elements';
-import type { TreeBehaviour } from './type';
-import { GrowIntoTree } from './behaviours/grow-into-tree';
+
+import { Entity } from '..';
+import type { QWorld } from '../../qworld';
+import { EntityType } from '../type';
 import { GrowIntoNeighbors } from './behaviours/grow-into-neighbors';
+import { GrowIntoTree } from './behaviours/grow-into-tree';
 import { GrowRoots } from './behaviours/grow-roots';
+import type { TreeBehaviour } from './type';
 
 export class Tree extends Entity {
   growth: number = 1;

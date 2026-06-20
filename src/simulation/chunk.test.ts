@@ -1,6 +1,7 @@
+import { describe, expect, test } from 'vite-plus/test';
+
 import { Chunk, ChunkFactory } from './chunk';
 import { Root, RootFactory } from './root';
-import { describe, expect, test } from 'vite-plus/test';
 
 describe('Chunk', () => {
   test.each([

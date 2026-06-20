@@ -1,6 +1,7 @@
 import { Elements } from '@/elements';
-import type { TreeBehaviour } from '../type';
 import { getCirclePoints, getNeighbors, pickRandom } from '@/util';
+
+import type { TreeBehaviour } from '../type';
 
 const CAN_GROW_ON = [
   Elements.EMPTY,

@@ -1,9 +1,10 @@
+// import { Logger } from "@/lib/Logger";
+import { XY } from '@/util';
+
 import type { Chunk } from './chunk';
 import type { Entity } from './entity';
 import { Root } from './root';
 import { World } from './world';
-// import { Logger } from "@/lib/Logger";
-import { XY } from '@/util';
 
 /**
  * Provide an interface to a World with Quads/Chunks.

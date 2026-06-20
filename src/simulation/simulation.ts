@@ -1,6 +1,7 @@
+import { MAX_CHUNKS_PER_TICK } from '@/const';
+
 import { behaviours } from './behaviours';
 import type { QWorld } from './qworld';
-import { MAX_CHUNKS_PER_TICK } from '@/const';
 
 export class Simulation {
   qworld: QWorld;

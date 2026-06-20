@@ -1,6 +1,8 @@
-import { Root, RootFactory } from './root';
-import { XY } from '@/util/XY';
 import { describe, expect, test } from 'vite-plus/test';
+
+import { XY } from '@/util/XY';
+
+import { Root, RootFactory } from './root';
 
 describe.only('Root', () => {
   test.each([

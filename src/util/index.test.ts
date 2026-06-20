@@ -1,6 +1,7 @@
+import { expect, describe, test } from 'vite-plus/test';
+
 import { clampFail, getCirclePoints, getNeighbors, wrapAround } from '.';
 import { XY } from './XY';
-import { expect, describe, test } from 'vite-plus/test';
 
 describe('Math', () => {
   describe('clampFail', () => {

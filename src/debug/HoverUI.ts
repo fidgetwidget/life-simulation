@@ -1,8 +1,9 @@
-import { MOTE_COLOR_MAP } from '@/elements';
 import { TILE_SIZE } from '@/const';
+import { MOTE_COLOR_MAP } from '@/elements';
 import { Logger } from '@/lib/Logger';
 import type { QWorld } from '@/simulation';
 import { Chunk } from '@/simulation/chunk';
+
 import './HoverUI.css';
 import type { Entity } from '@/simulation/entity';
 
@@ -99,9 +100,9 @@ export class HoverUI {
 
   updateData(): DebugData {
     const chunk = this.chunk!;
-    const entities = this.qworld.entities.filter((e) => {
-      chunk.index === e.chunkOrigin;
-    });
+    const entities = this.qworld.entities.filter(
+      (e) => chunk.index === e.chunkOrigin,
+    );
     const values = chunk.indexes.map((i) => this.qworld.getValue(i));
     const valueRecords: Record<number, number> =
       values?.reduce((acc: Record<number, number>, cur: number) => {

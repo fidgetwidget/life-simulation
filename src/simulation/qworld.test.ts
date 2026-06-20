@@ -1,4 +1,3 @@
-import { QWorld } from './qworld';
 import {
   afterEach,
   beforeEach,
@@ -7,6 +6,8 @@ import {
   test,
   vi,
 } from 'vite-plus/test';
+
+import { QWorld } from './qworld';
 
 describe('QWorld', () => {
   let consoleMock: any;

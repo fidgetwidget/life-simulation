@@ -1,4 +1,5 @@
 import { Elements } from '@/elements';
+
 import type { TreeBehaviour } from '../type';
 
 export const GrowIntoTree: TreeBehaviour = {

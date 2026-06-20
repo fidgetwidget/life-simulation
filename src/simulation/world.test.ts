@@ -1,4 +1,3 @@
-import { World } from './world';
 import {
   afterEach,
   beforeEach,
@@ -7,6 +6,8 @@ import {
   test,
   vi,
 } from 'vite-plus/test';
+
+import { World } from './world';
 
 describe('World', () => {
   let consoleMock: any;
