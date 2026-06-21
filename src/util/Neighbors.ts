@@ -1,5 +1,5 @@
 import { filterInPlace } from './Array';
-import { wrapAround, clampFail } from './Math';
+import { wrapNumber, clampFail } from './Math';
 import { XY } from './XY';
 
 const offset_nw = XY(-1, -1);
@@ -28,22 +28,38 @@ const Neighbors4Way: XY[] = [offset_n, offset_e, offset_s, offset_w];
 // Returns the wrapped around neighbor indexes for a given coord in a 2d grid for all 8 directions.
 export function getNeighbors(
   coord: XY,
+  eightWay: boolean = false,
+  wrap: boolean = false, // Note: perhaps these should be false by default...
   min: XY,
   max: XY,
-  wrap: boolean = true,
-  eightWay: boolean = true,
 ): XY[] {
   const mapFn = (offset: XY) => ({
     x: wrap
-      ? wrapAround(coord.x + offset.x, min.x, max.x)
+      ? wrapNumber(coord.x + offset.x, min.x, max.x)
       : clampFail(coord.x + offset.x, min.x, max.x),
     y: wrap
-      ? wrapAround(coord.y + offset.y, min.y, max.y)
+      ? wrapNumber(coord.y + offset.y, min.y, max.y)
       : clampFail(coord.y + offset.y, min.y, max.y),
   });
   // TODO: do something that generates less garbage to be collected...
   const all = eightWay ? Neighbors8Way.map(mapFn) : Neighbors4Way.map(mapFn);
-  return all.filter((coord) => coord.x != null && coord.y != null) as XY[];
+  return filterInPlace(
+    all,
+    (coord) => coord.x != null && coord.y != null,
+  ) as XY[];
+}
+
+export function getExpandedNeighbors(
+  coord: XY,
+  range: number = 1,
+  eightWay: boolean = false,
+  out: XY[] = [],
+) {
+  const set = eightWay ? Neighbors8Way : Neighbors4Way;
+  for (let r = 1; r <= range; r++) {
+    out.push(...set.map((c) => XY(coord.x + c.x * r, coord.y + c.y * r)));
+  }
+  return out;
 }
 
 // using drawBresenhamCircle as a reference

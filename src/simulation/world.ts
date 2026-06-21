@@ -75,7 +75,7 @@ export class World {
     }
     const min = XY.Zero;
     const max = XY(this.w - 1, this.h - 1);
-    const coords = getNeighbors(XY(x, y), min, max, false, eightWay);
+    const coords = getNeighbors(XY(x, y), eightWay, false, min, max);
     return coords.map(({ x, y }) => this.get(x, y));
   }
 
@@ -108,7 +108,7 @@ export class World {
     }
     const min = XY.Zero;
     const max = XY(this.w - 1, this.h - 1);
-    const coords = getNeighbors({ x, y }, min, max, wrap, eightWay);
+    const coords = getNeighbors({ x, y }, eightWay, wrap, min, max);
     // Logger.debug("getNeighborsAt", { x, y, min, max, coords });
     return coords.map(({ x, y }) => y * this.w + x);
   }

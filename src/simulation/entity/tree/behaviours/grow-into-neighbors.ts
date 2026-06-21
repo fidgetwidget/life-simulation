@@ -21,7 +21,9 @@ export const GrowIntoNeighbors: TreeBehaviour = {
     if (growth > 8) {
       ncoords = getCirclePoints(origin, 2);
     } else {
-      ncoords = getNeighbors(origin, min, max, false, growth > 4);
+      const eightWay = growth > 4;
+      const wrap = false;
+      ncoords = getNeighbors(origin, eightWay, wrap, min, max);
     }
 
     const options = ncoords.filter(

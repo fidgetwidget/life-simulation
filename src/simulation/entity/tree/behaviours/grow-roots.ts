@@ -11,8 +11,10 @@ export const GrowRoots: TreeBehaviour = {
     let ncoords: XY[] = [];
     const { min, max } = world;
     const { points } = tree;
+    const eightWay = true;
+    const wrap = false;
     points.forEach((p) => {
-      let n = getNeighbors(p, min, max, false, true);
+      let n = getNeighbors(p, eightWay, wrap, min, max);
       ncoords.push(...n);
     });
     filterInPlace(

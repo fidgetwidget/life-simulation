@@ -59,7 +59,7 @@ export class HoverUI {
     document.addEventListener('keyup', (e: KeyboardEvent) => {
       switch (e.key.toUpperCase()) {
         case 'L':
-          Logger.info('LOG: ', structuredClone(this.debugUI));
+          Logger.info('LOG: ', { ...this.debugUI });
           Logger.info('dump: ', { qworld: this.qworld });
           break;
       }

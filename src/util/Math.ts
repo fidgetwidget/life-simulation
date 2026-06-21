@@ -3,14 +3,20 @@
  *  of the range if the given value excedes one end of the range.
  * Otherwise it just returns the val given.
  */
-export function wrapAround(
+export function wrapNumber(
   val: number, //.
   min: number,
   max: number,
 ): number {
-  if (val < min) return max;
-  if (val > max) return min;
-  return val;
+  const range = max - min + 1;
+  return min + ((((val - min) % range) + range) % range);
+}
+
+/**
+ * Takes a value and min, max range and returns the value clamped to the range if it falls outside of it.
+ */
+export function clampNumber(val: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, val));
 }
 
 /**

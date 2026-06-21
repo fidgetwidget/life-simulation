@@ -52,7 +52,7 @@ export class Chunk {
         x: this.root.chunksWide - 1,
         y: this.root.chunksHigh - 1,
       };
-      const ncoords = getNeighbors(this.coord, min, max, false);
+      const ncoords = getNeighbors(this.coord, true, false, min, max);
       // Logger.debug('Chunk:neighbors', {
       //   min,
       //   max,
