@@ -11,23 +11,50 @@ export function filterInPlace<T>(
   arr: T[],
   condition: (val: T, index: number, arr: T[]) => boolean,
 ): T[] {
+  return filterInto(arr, condition, arr);
+}
+
+/**
+ * Filters an array into a given array instead of creating a new one.
+ * Note: creates a new array if no out array given.
+ */
+export function filterInto<T>(
+  arr: T[],
+  condition: (val: T, index: number, arr: T[]) => boolean,
+  out: T[] = [],
+): T[] {
   let i = 0,
     j = 0;
   while (i < arr.length) {
-    if (condition(arr[i], i, arr)) arr[j++] = arr[i];
+    if (condition(arr[i], i, arr)) out[j++] = arr[i];
     i++;
   }
-  arr.length = j;
-  return arr;
+  out.length = j;
+  return out;
 }
 
+/**
+ * Map an array into the same array without creating a new array.
+ */
 export function mapInPlace<T, V>(
   arr: T[],
   transform: (val: T, index: number, arr: any[]) => V,
 ): V[] {
   let temp: unknown[] = arr;
+  return mapInto(arr, transform, temp as V[]);
+}
+
+/**
+ * Map into an optional given array rather than create a new one.
+ * Note: creates a new one if no out array given.
+ */
+export function mapInto<T, V>(
+  arr: T[],
+  transform: (val: T, index: number, arr: any[]) => V,
+  out: V[] = [],
+): V[] {
   arr.forEach((value, index, array) => {
-    temp[index] = transform(value, index, array);
+    out[index] = transform(value, index, array);
   });
-  return temp as V[];
+  return out;
 }
