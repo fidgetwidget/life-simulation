@@ -1,6 +1,10 @@
 import { expect, describe, test } from 'vite-plus/test';
 
-import { getCirclePoints, getExpandedNeighbors, getNeighbors } from '.';
+import {
+  getCirclePoints,
+  getExpandedNeighbors,
+  getNeighbors,
+} from './Neighbors';
 import { XY } from './XY';
 
 describe('Neighbors', () => {

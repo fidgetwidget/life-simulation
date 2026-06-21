@@ -1,6 +1,6 @@
 import { expect, describe, test } from 'vite-plus/test';
 
-import { clampFail, clampNumber, wrapNumber } from '.';
+import { clampFail, clampNumber, wrapNumber } from './Math';
 
 describe('Math', () => {
   describe('clampFail', () => {
