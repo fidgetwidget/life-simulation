@@ -1,5 +1,5 @@
 import { Elements } from '@/elements';
-import { filterInPlace, getNeighbors, pickRandom } from '@/util';
+import { filterInPlace, getNeighborsPlus, pickRandom } from '@/util';
 
 import type { TreeBehaviour } from '../type';
 
@@ -14,7 +14,7 @@ export const GrowRoots: TreeBehaviour = {
     const eightWay = true;
     const wrap = false;
     points.forEach((p) => {
-      let n = getNeighbors(p, eightWay, wrap, min, max);
+      let n = getNeighborsPlus(p, min, max, eightWay, wrap);
       ncoords.push(...n);
     });
     filterInPlace(

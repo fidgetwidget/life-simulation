@@ -4,10 +4,79 @@ import {
   getCirclePoints,
   getExpandedNeighbors,
   getNeighbors,
+  getNeighborsPlus,
 } from './Neighbors';
 import { XY } from './XY';
 
 describe('Neighbors', () => {
+  /**
+   * A simple get neighbor XY coords for a given XY coord.
+   */
+  describe('getNeighbors', () => {
+    //  +----------------------+
+    //  | -1,-1 |  0,-1 | 1,-1 |
+    //  | -1, 0 |  0, 0 | 1, 0 |
+    //  | -1, 1 |  0, 1 | 1, 1 |
+    //  +----------------------+
+    test.each`
+      name           | coord      | eightWay | count | results
+      ${'0,0: 8Way'} | ${XY.Zero} | ${true}  | ${8}  | ${[XY(-1, -1), XY(0, -1), XY(1, -1), XY(1, 0), XY(1, 1), XY(0, 1), XY(-1, 1), XY(-1, 0)]}
+      ${'0,0: 4way'} | ${XY.Zero} | ${false} | ${4}  | ${[XY(0, -1), XY(1, 0), XY(0, 1), XY(-1, 0)]}
+    `('$name', ({ coord, eightWay, count, results }) => {
+      const actual = getNeighbors(coord, eightWay);
+      expect(actual.length).toBe(count);
+      expect(actual).toEqual(results);
+    });
+  });
+
+  describe('getNeighborsPlus', () => {
+    //  +-----------------+
+    //  | nw  | n   | ne  |
+    //  | w   | c   | e   |
+    //  | sw  | s   | se  |
+    //  +-----------------+
+    const nw = XY(0, 0);
+    const n = XY(1, 0);
+    const ne = XY(2, 0);
+    const w = XY(0, 1);
+    const c = XY(1, 1);
+    const e = XY(2, 1);
+    const sw = XY(0, 2);
+    const s = XY(1, 2);
+    const se = XY(2, 2);
+
+    const MIN = XY.Zero;
+    const MAX = XY(2, 2);
+
+    test.each`
+      name                 | coord | eightWay | wrap     | results
+      ${'C:  4way|nowrap'} | ${c}  | ${false} | ${false} | ${[n, e, s, w]}
+      ${'N:  4way|nowrap'} | ${n}  | ${false} | ${false} | ${[ne, c, nw]}
+      ${'NW: 4way|nowrap'} | ${nw} | ${false} | ${false} | ${[n, w]}
+      ${'E:  4way|nowrap'} | ${e}  | ${false} | ${false} | ${[ne, se, c]}
+      ${'S:  4way|nowrap'} | ${s}  | ${false} | ${false} | ${[c, se, sw]}
+      ${'C:  8way|nowrap'} | ${c}  | ${true}  | ${false} | ${[nw, n, ne, e, se, s, sw, w]}
+      ${'N:  8way|nowrap'} | ${n}  | ${true}  | ${false} | ${[ne, e, c, w, nw]}
+      ${'NW: 8way|nowrap'} | ${nw} | ${true}  | ${false} | ${[n, c, w]}
+      ${'E:  8way|nowrap'} | ${e}  | ${true}  | ${false} | ${[n, ne, se, s, c]}
+      ${'S:  8way|nowrap'} | ${s}  | ${true}  | ${false} | ${[w, c, e, se, sw]}
+      ${'C:  4way|wrap'}   | ${c}  | ${false} | ${true}  | ${[n, e, s, w]}
+      ${'N:  4way|wrap'}   | ${n}  | ${false} | ${true}  | ${[s, ne, c, nw]}
+      ${'NW: 4way|wrap'}   | ${nw} | ${false} | ${true}  | ${[sw, n, w, ne]}
+      ${'E:  4way|wrap'}   | ${e}  | ${false} | ${true}  | ${[ne, w, se, c]}
+      ${'S:  4way|wrap'}   | ${s}  | ${false} | ${true}  | ${[c, se, n, sw]}
+      ${'C:  8way|wrap'}   | ${c}  | ${true}  | ${true}  | ${[nw, n, ne, e, se, s, sw, w]}
+      ${'N:  8way|wrap'}   | ${n}  | ${true}  | ${true}  | ${[sw, s, se, ne, e, c, w, nw]}
+      ${'NW: 8way|wrap'}   | ${nw} | ${true}  | ${true}  | ${[se, sw, s, n, c, w, e, ne]}
+      ${'E:  8way|wrap'}   | ${e}  | ${true}  | ${true}  | ${[n, ne, nw, w, sw, se, s, c]}
+      ${'S:  8way|wrap'}   | ${s}  | ${true}  | ${true}  | ${[w, c, e, se, ne, n, nw, sw]}
+    `('$name : $coord', ({ coord, eightWay, wrap, results }) => {
+      expect(getNeighborsPlus(coord, MIN, MAX, eightWay, wrap)).toEqual(
+        results,
+      );
+    });
+  });
+
   describe('getExpandedNeighbors', () => {
     const MIN = XY(-10, -10);
     const MAX = XY(10, 10);
@@ -20,7 +89,7 @@ describe('Neighbors', () => {
       "at range 1, it's results match getNeighbors $center",
       ({ center, eightWay }) => {
         const actual = getExpandedNeighbors(center, 1, eightWay);
-        const expected = getNeighbors(center, eightWay, false, MIN, MAX);
+        const expected = getNeighborsPlus(center, MIN, MAX, eightWay, false);
         expect(actual).toEqual(expected);
       },
     );
@@ -58,6 +127,7 @@ describe('Neighbors', () => {
       },
     );
   });
+
   describe('getCirclePoints', () => {
     //  +----------------------+
     //  | -1,-1 |  0,-1 | 1,-1 |
@@ -73,74 +143,6 @@ describe('Neighbors', () => {
       const actual = getCirclePoints(coord, range);
       expect(actual.length).toBe(count);
       expect(actual).toEqual(results);
-    });
-  });
-
-  describe('getNeighbors', () => {
-    //  +-----------------+
-    //  | nw  | n   | ne  |
-    //  | w   | c   | e   |
-    //  | sw  | s   | se  |
-    //  +-----------------+
-    const nw = XY(0, 0);
-    const n = XY(1, 0);
-    const ne = XY(2, 0);
-    const w = XY(0, 1);
-    const c = XY(1, 1);
-    const e = XY(2, 1);
-    const sw = XY(0, 2);
-    const s = XY(1, 2);
-    const se = XY(2, 2);
-    test.each`
-      name    | coord | results
-      ${'C'}  | ${c}  | ${[nw, n, ne, e, se, s, sw, w]}
-      ${'N'}  | ${n}  | ${[ne, e, c, w, nw]}
-      ${'NW'} | ${nw} | ${[n, c, w]}
-      ${'E'}  | ${e}  | ${[n, ne, se, s, c]}
-      ${'S'}  | ${s}  | ${[w, c, e, se, sw]}
-    `('$name : $coord - 8way noWrap', ({ coord, results }) => {
-      expect(getNeighbors(coord, true, false, XY.Zero, XY(2, 2))).toEqual(
-        results,
-      );
-    });
-
-    test.each`
-      name    | coord | results
-      ${'C'}  | ${c}  | ${[nw, n, ne, e, se, s, sw, w]}
-      ${'N'}  | ${n}  | ${[sw, s, se, ne, e, c, w, nw]}
-      ${'NW'} | ${nw} | ${[se, sw, s, n, c, w, e, ne]}
-      ${'E'}  | ${e}  | ${[n, ne, nw, w, sw, se, s, c]}
-      ${'S'}  | ${s}  | ${[w, c, e, se, ne, n, nw, sw]}
-    `('$name : $coord - 8way wrap', ({ coord, results }) => {
-      expect(getNeighbors(coord, true, true, XY.Zero, XY(2, 2))).toEqual(
-        results,
-      );
-    });
-
-    test.each`
-      name    | coord | results
-      ${'C'}  | ${c}  | ${[n, e, s, w]}
-      ${'N'}  | ${n}  | ${[ne, c, nw]}
-      ${'NW'} | ${nw} | ${[n, w]}
-      ${'E'}  | ${e}  | ${[ne, se, c]}
-      ${'S'}  | ${s}  | ${[c, se, sw]}
-    `('$name : $coord - 4way noWrap', ({ coord, results }) => {
-      expect(getNeighbors(coord, false, false, XY.Zero, XY(2, 2))).toEqual(
-        results,
-      );
-    });
-
-    test.each`
-      name    | coord | results
-      ${'C'}  | ${c}  | ${[n, e, s, w]}
-      ${'N'}  | ${n}  | ${[s, ne, c, nw]}
-      ${'NW'} | ${nw} | ${[sw, n, w, ne]}
-      ${'E'}  | ${e}  | ${[ne, w, se, c]}
-      ${'S'}  | ${s}  | ${[c, se, n, sw]}
-    `('$name : $coord - 4way wrap', ({ coord, results }) => {
-      expect(getNeighbors(coord, false, true, XY.Zero, XY(2, 2))).toEqual(
-        results,
-      );
     });
   });
 });

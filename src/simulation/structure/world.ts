@@ -1,5 +1,5 @@
 import { Logger } from '@/lib/Logger';
-import { getNeighbors, XY } from '@/util';
+import { getNeighborsPlus, XY } from '@/util';
 
 export class World {
   private _w: number;
@@ -75,7 +75,7 @@ export class World {
     }
     const min = XY.Zero;
     const max = XY(this.w - 1, this.h - 1);
-    const coords = getNeighbors(XY(x, y), eightWay, false, min, max);
+    const coords = getNeighborsPlus(XY(x, y), min, max, eightWay, false);
     return coords.map(({ x, y }) => this.get(x, y));
   }
 
@@ -108,8 +108,7 @@ export class World {
     }
     const min = XY.Zero;
     const max = XY(this.w - 1, this.h - 1);
-    const coords = getNeighbors({ x, y }, eightWay, wrap, min, max);
-    // Logger.debug("getNeighborsAt", { x, y, min, max, coords });
+    const coords = getNeighborsPlus({ x, y }, min, max, eightWay, wrap);
     return coords.map(({ x, y }) => y * this.w + x);
   }
 

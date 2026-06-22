@@ -1,6 +1,6 @@
-type World = import('./simulation/world').World;
+type World = import('./simulation/structure/world').World;
 type QWorld = import('./simulation/qworld').QWorld;
-type Chunk = import('./simulation/chunk').Chunk;
+type Chunk = import('./simulation/structure/chunk').Chunk;
 type Element = import('./elements').Elements;
 type XY = import('./util/XY').XY;
 

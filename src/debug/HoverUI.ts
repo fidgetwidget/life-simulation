@@ -1,16 +1,21 @@
 import { TILE_SIZE } from '@/const';
 import { MOTE_COLOR_MAP } from '@/elements';
 import { Logger } from '@/lib/Logger';
-import type { QWorld } from '@/simulation';
-import { Chunk } from '@/simulation/chunk';
+import {
+  type QWorld,
+  getEntities,
+  getValues,
+  getValuesRecords,
+  QChunk,
+} from '@/simulation';
+import type { Entity } from '@/simulation/entity';
 
 import './HoverUI.css';
-import type { Entity } from '@/simulation/entity';
 
 export const CONTAINER_CLASS = 'hover-ui-container';
 
 type DebugData = {
-  chunk: Chunk;
+  qchunk: QChunk;
   values: number[];
   valueRecords: Record<number, number>;
   entities: Entity[];
@@ -19,7 +24,7 @@ type DebugData = {
 export class HoverUI {
   canvas: HTMLCanvasElement;
   qworld: QWorld;
-  chunk?: Chunk;
+  qchunk?: QChunk;
   active: boolean = false;
   visible: boolean = __DEBUG__;
   debugUI: any;
@@ -29,7 +34,7 @@ export class HoverUI {
   constructor(canvas: HTMLCanvasElement, qworld: QWorld) {
     this.canvas = canvas;
     this.qworld = qworld;
-    this.chunk = undefined;
+    this.qchunk = undefined;
     this.debugUI = {
       chunkIndex: -1,
       chunk: null,
@@ -86,52 +91,42 @@ export class HoverUI {
 
   handleMouseOut() {
     this.active = false;
-    this.chunk = undefined;
+    this.qchunk = undefined;
     if (!this.dom.classList.contains('hide')) this.dom.classList.add('hide');
   }
 
   updateChunk(chunk?: Chunk) {
-    if (this.chunk?.index === chunk?.index) return;
+    if (this.qchunk?.index === chunk?.index || chunk === undefined) return;
 
-    this.chunk = chunk;
+    this.qchunk = QChunk(this.qworld, chunk.index);
     const data = this.updateData();
     this.updateDom(data);
   }
 
   updateData(): DebugData {
-    const chunk = this.chunk!;
-    const entities = this.qworld.entities.filter(
-      (e) => chunk.index === e.chunkOrigin,
-    );
-    const values = chunk.indexes.map((i) => this.qworld.getValue(i));
-    const valueRecords: Record<number, number> =
-      values?.reduce((acc: Record<number, number>, cur: number) => {
-        if (acc[cur] === undefined) {
-          acc[cur] = 0;
-        }
-        acc[cur] += 1;
-        return acc;
-      }, {}) ?? {};
+    const qchunk = this.qchunk!;
+    const entities = getEntities(qchunk);
+    const values = getValues(qchunk);
+    const valueRecords = getValuesRecords(qchunk);
     const data = {
-      chunk,
+      qchunk,
       values,
       valueRecords,
       entities,
     };
-    this.debugUI.chunkIndex = chunk?.index ?? -1;
-    this.debugUI.chunk = chunk;
+    this.debugUI.chunkIndex = qchunk?.index ?? -1;
+    this.debugUI.chunk = qchunk;
     this.debugUI.entities = entities;
     return data;
   }
 
-  updateDom({ chunk, values, valueRecords, entities }: DebugData) {
+  updateDom({ qchunk, values, valueRecords, entities }: DebugData) {
     const rect: DOMRect = this.canvas.getBoundingClientRect();
     const scroll = {
       x: document.scrollingElement?.scrollLeft ?? 0,
       y: document.scrollingElement?.scrollTop ?? 0,
     };
-    const { w, h, top, left } = getPosition(rect, scroll, chunk);
-
+    const { w, h, top, left } = getPosition(rect, scroll, qchunk);
     const count = values?.length ?? 0;
 
     // TODO: move this to a template or something to be better managed/maintained...
@@ -140,7 +135,7 @@ export class HoverUI {
         <ul class='hover-ui-list'>
             <li>
                 <label>index</label>
-                <span>${chunk?.index}</span>
+                <span>${qchunk?.index}</span>
             </li>
             <li>
                 <label>type</label>
@@ -177,7 +172,7 @@ export class HoverUI {
   }
 }
 
-function getPosition(rect: DOMRect, scroll: XY, chunk: Chunk) {
+function getPosition(rect: DOMRect, scroll: XY, { chunk }: QChunk) {
   const cx = chunk.x;
   const cy = chunk.y;
   const cw = chunk.w;

@@ -1,5 +1,5 @@
 import { Elements } from '@/elements';
-import { getCirclePoints, getNeighbors, pickRandom } from '@/util';
+import { getCirclePoints, getNeighborsPlus, pickRandom } from '@/util';
 
 import type { TreeBehaviour } from '../type';
 
@@ -17,13 +17,13 @@ export const GrowIntoNeighbors: TreeBehaviour = {
   action: ({ tree, world }) => {
     const { min, max } = world;
     const { origin, growth } = tree;
-    let ncoords: XY[];
+    let ncoords: XY[] = [];
     if (growth > 8) {
-      ncoords = getCirclePoints(origin, 2);
+      getCirclePoints(origin, 2, min, max, ncoords);
     } else {
       const eightWay = growth > 4;
       const wrap = false;
-      ncoords = getNeighbors(origin, eightWay, wrap, min, max);
+      getNeighborsPlus(origin, min, max, eightWay, wrap, ncoords);
     }
 
     const options = ncoords.filter(

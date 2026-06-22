@@ -1,21 +1,25 @@
 import { describe, expect, test } from 'vite-plus/test';
 
+import { XY } from '@/util';
+
 import { Chunk, ChunkFactory } from './chunk';
 import { Root, RootFactory } from './root';
 
 describe('Chunk', () => {
   test.each([
     {
-      root: { x: 0, y: 0, w: 2, h: 2, depth: 1 },
-      chunk: { index: 0, x: 1, y: 1, w: 1, h: 1 },
-      chunkIndexes: [3],
+      root: { x: 0, y: 0, w: 8, h: 8, depth: 1 },
+      chunk: { index: 0, x: 0, y: 0, w: 4, h: 4 },
+      chunkIndexes: [0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19, 24, 25, 26, 27],
+      chunkNCoords: [XY(1, 0), XY(1, 1), XY(0, 1)],
       chunkNeighbors: [1, 3, 2],
     },
     {
       root: { x: 0, y: 0, w: 8, h: 8, depth: 2 },
-      chunk: { index: 0, x: 0, y: 0, w: 2, h: 2 },
-      chunkIndexes: [0, 1, 8, 9],
-      chunkNeighbors: [1, 5, 4],
+      chunk: { index: 1, x: 2, y: 0, w: 2, h: 2 },
+      chunkIndexes: [2, 3, 10, 11],
+      chunkNCoords: [XY(2, 0), XY(2, 1), XY(1, 1), XY(0, 1), XY(0, 0)],
+      chunkNeighbors: [2, 6, 5, 4, 0],
     },
   ])(
     `constructor root[$root.x $root.y $root.w $root.h $root.depth] $chunk.index`,
@@ -23,6 +27,7 @@ describe('Chunk', () => {
       root: rootParams,
       chunk: chunkParams,
       chunkIndexes,
+      chunkNCoords,
       chunkNeighbors,
     }) => {
       const root: Root = RootFactory(rootParams);
@@ -36,6 +41,7 @@ describe('Chunk', () => {
 
       // chunk has the expected values
       expect(chunk.indexes).toEqual(chunkIndexes);
+      expect(chunk.neighborCoords).toEqual(chunkNCoords);
       expect(chunk.neighbors).toEqual(chunkNeighbors);
     },
   );
