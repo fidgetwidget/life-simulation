@@ -136,7 +136,7 @@ export class QWorld {
   /**
    * get the next change from the world.
    */
-  process(): null | QuadData {
+  process(): null | ChangeData {
     if (!this.hasChanges) return null;
     const { i, x, y, v } = this.world.process()!;
     return { i, x, y, v };

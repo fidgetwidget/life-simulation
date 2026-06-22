@@ -6,7 +6,7 @@ type XY = import('./util/XY').XY;
 
 declare const __DEBUG__: boolean;
 
-type QuadData = {
+type ChangeData = {
   x: number;
   y: number;
   i: number;

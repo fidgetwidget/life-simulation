@@ -10,6 +10,8 @@
     "test": "vp test",
     "lint": "vp lint",
     "lint:fix": "vp lint --fix",
+    "fmt": "vp fmt",
+    "check": "vp check",
     "prepare": "vp config"
   },
   "devDependencies": {

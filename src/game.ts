@@ -28,7 +28,7 @@ export class Game {
   ctx: CanvasRenderingContext2D;
   qworld: QWorld;
   sim: Simulation;
-  changes: QuadData[];
+  changes: ChangeData[];
   debugUi: HoverUI;
 
   private _paused: boolean = true;
