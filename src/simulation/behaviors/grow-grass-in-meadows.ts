@@ -1,7 +1,7 @@
 import { Elements } from '@/elements';
 import { pickRandom } from '@/util';
 
-export const GrowGrassInMeadows: WorldBehaviour = {
+export const GrowGrassInMeadows: WorldBehavior = {
   // has trees and grass and lots of empty space
   filter: ({ values, counts }) =>
     (counts[Elements.TREE] > 0 || counts[Elements.TREE_TRUNK] > 0) && // has at least 1 tree

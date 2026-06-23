@@ -11,10 +11,30 @@ import { Elements, MOTE_COLOR_MAP } from '@/elements.ts';
 // import { Logger } from "@/lib/Logger.ts";
 import { QWorld } from '@/simulation';
 import { Simulation } from '@/simulation/simulation.ts';
-import { XY } from '@/util';
-import { getPointsAlongLine } from '@/util/Line.ts';
+import { normalize, XY } from '@/util';
 
+import { River } from './simulation/entity/river';
 import { Tree } from './simulation/entity/tree';
+import { perlin2, seed } from './util/noise';
+import { rng } from './util/Random';
+
+// const NOISE_VALUE_FILTERS = [
+//   { min: 0, max: 0.3, output: 0 },
+//   { min: 0.3, max: 0.5, output: 0.25 },
+//   { min: 0.5, max: 0.7, output: 0.5 },
+//   { min: 0.7, max: 0.9, output: 0.75 },
+//   { min: 0.9, max: 1, output: 1 },
+// ];
+// const NOISE_MAP = (value: number): number => {
+//   NOISE_VALUE_FILTERS.forEach(({ min, max, output }) => {
+//     if (
+//       Math.floor(value * 100) >= Math.floor(min * 100) &&
+//       Math.floor(value * 100) < Math.floor(max * 100)
+//     )
+//       return output;
+//   });
+//   return value;
+// };
 
 export enum GameEventTypes {
   Pause = 'pause',
@@ -26,7 +46,7 @@ const UnPauseEvent = new Event(GameEventTypes.UnPause);
 export class Game {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-  qworld: QWorld;
+  qWorld: QWorld;
   sim: Simulation;
   changes: ChangeData[];
   debugUi: HoverUI;
@@ -48,11 +68,11 @@ export class Game {
   constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
     this.canvas = canvas;
     this.ctx = ctx;
-    this.qworld = new QWorld(WIDTH, HEIGHT, QUAD_DEPTH);
-    this.sim = new Simulation(this.qworld);
+    this.qWorld = new QWorld(WIDTH, HEIGHT, QUAD_DEPTH);
+    this.sim = new Simulation(this.qWorld);
     this.changes = [];
 
-    this.debugUi = new HoverUI(canvas, this.qworld);
+    this.debugUi = new HoverUI(canvas, this.qWorld);
     document.body.appendChild(this.debugUi.dom);
   }
 
@@ -65,33 +85,22 @@ export class Game {
     this.renderQuads();
 
     this.flushRender();
+    // this.renderNoise();
   }
 
   initTrees() {
-    this.qworld.addEntity(new Tree(XY(24, 31), this.qworld));
-    this.qworld.addEntity(new Tree(XY(12, 10), this.qworld));
-    this.qworld.addEntity(new Tree(XY(34, 16), this.qworld));
+    this.qWorld.addEntity(new Tree(XY(24, 31), this.qWorld));
+    this.qWorld.addEntity(new Tree(XY(12, 10), this.qWorld));
+    this.qWorld.addEntity(new Tree(XY(34, 16), this.qWorld));
   }
 
   initRiver() {
-    // TODO: Change this to an entity that randomly splits/turns and supports varying widths.
-    const setments = [
-      ...getPointsAlongLine(
-        XY(WIDTH - 5, 0),
-        XY(WIDTH - 8, HEIGHT / 2),
-        XY.Zero,
-        XY(WIDTH, HEIGHT),
-      ),
-      getPointsAlongLine(
-        XY(WIDTH - 8, HEIGHT / 2),
-        XY(WIDTH - 3, HEIGHT),
-        XY.Zero,
-        XY(WIDTH, HEIGHT),
-      ),
-    ];
-    setments.flat().forEach(({ x, y }) => {
-      this.qworld.setValue(x, y, Elements.MOVING_WATER);
-    });
+    this.qWorld.addEntity(
+      new River(XY(200, 3), this.qWorld, normalize(XY(-1, 100)), 50, 120),
+    );
+    this.qWorld.addEntity(
+      new River(XY(3, 200), this.qWorld, normalize(XY(120, -60)), 15, 30),
+    );
   }
 
   attachEventListeners() {
@@ -112,14 +121,14 @@ export class Game {
   handleMouseClick(event: MouseEvent) {
     const { clientX, clientY } = event;
     const rect: DOMRect = this.canvas.getBoundingClientRect();
-    const canvasx = clientX - rect.left;
-    const canvasy = clientY - rect.top;
+    const canvasX = clientX - rect.left;
+    const canvasY = clientY - rect.top;
     // x,y position on the canvas to world x,y
-    const worldx = Math.floor(canvasx / TILE_SIZE);
-    const worldy = Math.floor(canvasy / TILE_SIZE);
-    const value = this.qworld.getValue(worldx, worldy);
+    const worldX = Math.floor(canvasX / TILE_SIZE);
+    const worldY = Math.floor(canvasY / TILE_SIZE);
+    const value = this.qWorld.getValue(worldX, worldY);
     if (value !== Elements.EMPTY)
-      this.qworld.setValue(worldx, worldy, Elements.EMPTY);
+      this.qWorld.setValue(worldX, worldY, Elements.EMPTY);
   }
 
   initPaint() {
@@ -135,7 +144,7 @@ export class Game {
   }
 
   renderQuads() {
-    this.qworld.chunks.forEach((c) => {
+    this.qWorld.chunks.forEach((c) => {
       this.ctx.strokeStyle = CHUNK_LINES_COLOR;
       let { x, y, w, h } = c;
       x *= TILE_SIZE;
@@ -148,12 +157,12 @@ export class Game {
 
   update() {
     // Don't do more simulation if there are changes not yet rendered...
-    if (!this.qworld.hasChanges && this.changes.length == 0) {
+    if (!this.qWorld.hasChanges && this.changes.length == 0) {
       this.sim.tick();
     }
 
-    if (this.qworld.hasChanges) {
-      const val = this.qworld.process()!;
+    if (this.qWorld.hasChanges) {
+      const val = this.qWorld.process()!;
       this.changes.unshift(val);
     }
   }
@@ -171,9 +180,28 @@ export class Game {
     }
   }
 
+  renderNoise() {
+    const { min, max } = this.qWorld;
+    const res = { x: TILE_SIZE, y: TILE_SIZE };
+    const values = [];
+    const n = seed(rng.next());
+    for (let x = min.x; x < max.x; x++) {
+      for (let y = min.y; y < max.y; y++) {
+        const v = perlin2(x / res.x, y / res.y, n);
+        values.push({ x, y, v });
+      }
+    }
+    values.forEach(({ x, y, v }) => {
+      const cval = v * 255;
+      this.ctx.fillStyle = `rgb(${cval}, ${cval}, ${cval})`;
+      this.ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    });
+    console.log(values);
+  }
+
   flushRender() {
-    while (this.qworld.hasChanges) {
-      const { x, y, v } = this.qworld.process()!;
+    while (this.qWorld.hasChanges) {
+      const { x, y, v } = this.qWorld.process()!;
       // @ts-ignore - the MOTE_COLOR_MAP won't ever exactly map to the changes data type
       const color = MOTE_COLOR_MAP[v];
 

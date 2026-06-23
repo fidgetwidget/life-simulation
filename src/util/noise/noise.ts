@@ -1,89 +1,73 @@
-// https://github.com/joshforisha/fast-simplex-noise-js/blob/main/src/2d.ts
-// https://gamedev.stackexchange.com/questions/20880/simple-noise-generation
+import { Vec3 } from './vec3';
 
-import { rng } from '../Random';
-
-let perm: Uint8Array;
-let permMod12: Uint8Array;
-
-type RngFn = () => number;
-
-// 2D Simplex UnSkew Factor
-const G2 = (3.0 - Math.sqrt(3.0)) / 6.0;
-const SKEW_FACTOR = 0.5 * (Math.sqrt(3.0) - 1.0);
-const NORM_FACTOR = 70.14805770653952;
-
-const Grad = [
-  [1, 1],
-  [-1, 1],
-  [1, -1],
-  [-1, -1],
-  [1, 0],
-  [-1, 0],
-  [1, 0],
-  [-1, 0],
-  [0, 1],
-  [0, -1],
-  [0, 1],
-  [0, -1],
+// gradient vectors
+const g = [
+  Vec3(1, 1, 0),
+  Vec3(-1, 1, 0),
+  Vec3(1, -1, 0),
+  Vec3(-1, -1, 0),
+  Vec3(1, 0, 1),
+  Vec3(-1, 0, 1),
+  Vec3(1, 0, -1),
+  Vec3(-1, 0, -1),
+  Vec3(0, 1, 1),
+  Vec3(0, -1, 1),
+  Vec3(0, 1, -1),
+  Vec3(0, -1, -1),
 ];
 
-export const generatePermutations = (rng: RngFn) => {
-  const p = new Uint8Array(256);
-  for (let i = 0; i < 256; i++) p[i] = i;
+// permutations table
+const p = [
+  151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140,
+  36, 103, 30, 69, 142, 8, 99, 37, 240, 21, 10, 23, 190, 6, 148, 247, 120, 234,
+  75, 0, 26, 197, 62, 94, 252, 219, 203, 117, 35, 11, 32, 57, 177, 33, 88, 237,
+  149, 56, 87, 174, 20, 125, 136, 171, 168, 68, 175, 74, 165, 71, 134, 139, 48,
+  27, 166, 77, 146, 158, 231, 83, 111, 229, 122, 60, 211, 133, 230, 220, 105,
+  92, 41, 55, 46, 245, 40, 244, 102, 143, 54, 65, 25, 63, 161, 1, 216, 80, 73,
+  209, 76, 132, 187, 208, 89, 18, 169, 200, 196, 135, 130, 116, 188, 159, 86,
+  164, 100, 109, 198, 173, 186, 3, 64, 52, 217, 226, 250, 124, 123, 5, 202, 38,
+  147, 118, 126, 255, 82, 85, 212, 207, 206, 59, 227, 47, 16, 58, 17, 182, 189,
+  28, 42, 223, 183, 170, 213, 119, 248, 152, 2, 44, 154, 163, 70, 221, 153, 101,
+  155, 167, 43, 172, 9, 129, 22, 39, 253, 19, 98, 108, 110, 79, 113, 224, 232,
+  178, 185, 112, 104, 218, 246, 97, 228, 251, 34, 242, 193, 238, 210, 144, 12,
+  191, 179, 162, 241, 81, 51, 145, 235, 249, 14, 239, 107, 49, 192, 214, 31,
+  181, 199, 106, 157, 184, 84, 204, 176, 115, 121, 50, 45, 127, 4, 150, 254,
+  138, 236, 205, 93, 222, 114, 67, 29, 24, 72, 243, 141, 128, 195, 78, 66, 215,
+  61, 156, 180,
+];
 
-  let n: number;
-  let q: number;
-  for (let i = 255; i > 0; i--) {
-    n = Math.floor((i + 1) * rng());
-    q = p[i];
-    p[i] = p[n];
-    p[n] = q;
+export const F2 = 0.5 * (Math.sqrt(3) - 1);
+export const G2 = (3 - Math.sqrt(3)) / 6;
+export const F3 = 1 / 3;
+export const G3 = 1 / 6;
+
+const cache: Record<number, { perm: Uint8Array; gradP: Vec3[] }> = {};
+
+export function seed(seed: number) {
+  if (seed > 0 && seed < 1) {
+    // Scale the seed out
+    seed *= 65536;
+  }
+  seed = Math.floor(seed);
+  if (seed < 256) {
+    seed |= seed << 8;
   }
 
-  perm = new Uint8Array(512);
-  permMod12 = new Uint8Array(512);
-  for (let i = 0; i < 512; i++) {
-    perm[i] = p[i & 255];
-    permMod12[i] = perm[i] % 12;
+  if (cache[seed] !== undefined) return cache[seed];
+
+  const perm = new Uint8Array(512);
+  const gradP: Vec3[] = Array.from({ length: 512 });
+
+  for (var i = 0; i < 256; i++) {
+    const v = i & 1 ? p[i] ^ (seed & 255) : p[i] ^ ((seed >> 8) & 255);
+    perm[i] = perm[i + 256] = v;
+    gradP[i] = gradP[i + 256] = g[v % 12];
   }
-};
-generatePermutations(rng.next);
-rng.reset();
 
-// returns a number between 0 and 1 for any given x,y value.
-export const noise = (x: number, y: number): number => {
-  const s = (x + y) * SKEW_FACTOR;
-  const i = Math.floor(x + s);
-  const j = Math.floor(y + s);
-  const t = (i + j) * G2;
-  const X0 = i - t;
-  const Y0 = j - t;
-  const x0 = x - X0;
-  const y0 = y - Y0;
+  cache[seed] = {
+    perm,
+    gradP,
+  };
 
-  const i1 = x0 > y0 ? 1 : 0;
-  const j1 = x0 > y0 ? 0 : 1;
-
-  const x1 = x0 - i1 + G2;
-  const y1 = y0 - j1 + G2;
-  const x2 = x0 - 1.0 + 2.0 * G2;
-  const y2 = y0 - 1.0 + 2.0 * G2;
-
-  const ii = i & 255;
-  const jj = j & 255;
-  const g0 = Grad[permMod12[ii + perm[jj]]];
-  const g1 = Grad[permMod12[ii + i1 + perm[jj + j1]]];
-  const g2 = Grad[permMod12[ii + 1 + perm[jj + 1]]];
-
-  const t0 = 0.5 - x0 * x0 - y0 * y0;
-  const n0 = t0 < 0 ? 0.0 : t0 ** 4 * (g0[0] * x0 + g0[1] * y0);
-
-  const t1 = 0.5 - x1 * x1 - y1 * y1;
-  const n1 = t1 < 0 ? 0.0 : t1 ** 4 * (g1[0] * x1 + g1[1] * y1);
-
-  const t2 = 0.5 - x2 * x2 - y2 * y2;
-  const n2 = t2 < 0 ? 0.0 : t2 ** 4 * (g2[0] * x2 + g2[1] * y2);
-
-  return NORM_FACTOR * (n0 + n1 + n2);
-};
+  return cache[seed];
+}

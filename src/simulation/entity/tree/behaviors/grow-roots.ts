@@ -1,16 +1,18 @@
 import { Elements } from '@/elements';
+import type { EntityBehavior } from '@/simulation/type';
 import { filterInPlace, getNeighborsPlus, pickRandom } from '@/util';
 
-import type { TreeBehaviour } from '../type';
+import type { Tree } from '..';
 
 const CAN_GROW_ON = [Elements.EMPTY, Elements.GRASS, Elements.TALL_GRASS];
 
-export const GrowRoots: TreeBehaviour = {
-  filter: ({ tree }) => tree.growth > 3 && tree.roots < 5,
-  action: ({ tree, world }) => {
+export const GrowRoots: EntityBehavior = {
+  filter: ({ entity }) =>
+    (entity as Tree).growth > 3 && (entity as Tree).roots < 5,
+  action: ({ entity, world }) => {
     let ncoords: XY[] = [];
     const { min, max } = world;
-    const { points } = tree;
+    const { points } = entity;
     const eightWay = true;
     const wrap = false;
     points.forEach((p) => {
@@ -25,6 +27,6 @@ export const GrowRoots: TreeBehaviour = {
     );
     if (ncoords.length === 0) return;
     const point = pickRandom(ncoords);
-    tree.addPoint(point, Elements.ROOTS);
+    entity.addPoint(point, Elements.ROOTS);
   },
 };

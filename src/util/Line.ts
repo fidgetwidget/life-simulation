@@ -10,7 +10,10 @@ export function getPointsAlongLine(start: XY, end: XY, min: XY, max: XY): XY[] {
     const p = lerpXY(start, end, t);
     round(p);
     // until we clamp the start/end, if we hit the limit, end the loop.
-    if (p.x < min.x || p.y < min.y || p.x > max.x || p.y > max.y) step = N;
+    if (p.x < min.x || p.y < min.y || p.x > max.x || p.y > max.y) {
+      step = N;
+      return points;
+    }
     points.push(p);
   }
   return points;

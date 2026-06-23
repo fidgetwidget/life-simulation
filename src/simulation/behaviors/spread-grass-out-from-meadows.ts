@@ -1,7 +1,7 @@
 import { Elements } from '@/elements';
 import { pickRandom } from '@/util';
 
-export const SpreadGrassOutFromMeadows: WorldBehaviour = {
+export const SpreadGrassOutFromMeadows: WorldBehavior = {
   // has a tree and enough grass
   filter: ({ values, counts }) => counts[Elements.GRASS] > values.length * 0.25,
   // spread grass beyond the chunk

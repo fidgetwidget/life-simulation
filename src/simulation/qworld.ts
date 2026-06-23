@@ -38,6 +38,14 @@ export class QWorld {
     return this.root.chunks;
   }
 
+  get chunksWide() {
+    return this.root.chunksWide;
+  }
+
+  get chunksHigh() {
+    return this.root.chunksHigh;
+  }
+
   constructor(w: number, h: number, depth: number) {
     this.world = new World(w, h);
     this.root = new Root(0, 0, w, h, depth);

@@ -1,7 +1,7 @@
 import { Elements } from '@/elements';
 import { filterInPlace, pickRandom } from '@/util';
 
-export const GrowGrassNearTrees: WorldBehaviour = {
+export const GrowGrassNearTrees: WorldBehavior = {
   // has trees
   filter: ({ counts }) => counts[Elements.TREE] > 0,
   // grow grass against the tree

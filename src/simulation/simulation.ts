@@ -1,6 +1,6 @@
 import { MAX_CHUNKS_PER_TICK } from '@/const';
 
-import { behaviours } from './behaviours';
+import { behaviors } from './behaviors';
 import type { QWorld } from './qworld';
 
 export class Simulation {
@@ -32,7 +32,7 @@ export class Simulation {
     // NOTE: This pattern is less efficient than doing the filtering and acting in one loop
     //  but this is better for debugging.
     // TODO: have a debug vs build version of this for speed reasons.
-    behaviours.forEach(
+    behaviors.forEach(
       ({ filter, action }) =>
         filter({ qworld, chunk, values, counts }) && action({ qworld, chunk }),
     );

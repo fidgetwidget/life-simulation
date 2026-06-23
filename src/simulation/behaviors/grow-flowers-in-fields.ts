@@ -1,7 +1,7 @@
 import { Elements } from '@/elements';
 import { pickRandom } from '@/util';
 
-export const GrowFlowersInFields: WorldBehaviour = {
+export const GrowFlowersInFields: WorldBehavior = {
   // has enough grass
   filter: ({ values, counts }) =>
     counts[Elements.GRASS] > values.length * 0.25 &&

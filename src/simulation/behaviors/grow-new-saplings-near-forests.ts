@@ -4,7 +4,7 @@ import { pickRandom } from '@/util';
 import { Tree } from '../entity/tree';
 // import { Logger } from "@/lib/Logger";
 
-export const GrowNewSaplingsNearForests: WorldBehaviour = {
+export const GrowNewSaplingsNearForests: WorldBehavior = {
   // has enough grass
   filter: ({ values, counts }) => {
     return (

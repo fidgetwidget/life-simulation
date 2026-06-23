@@ -1,7 +1,8 @@
 import { Elements } from '@/elements';
+import type { EntityBehavior } from '@/simulation/type';
 import { getCirclePoints, getNeighborsPlus, pickRandom } from '@/util';
 
-import type { TreeBehaviour } from '../type';
+import type { Tree } from '..';
 
 const CAN_GROW_ON = [
   Elements.EMPTY,
@@ -10,12 +11,14 @@ const CAN_GROW_ON = [
   Elements.ROOTS,
 ];
 
-export const GrowIntoNeighbors: TreeBehaviour = {
-  filter: ({ tree }) =>
-    !tree.isSapling &&
-    (tree.growth < 4 || (tree.growth < 32 && tree.roots > 3)),
-  action: ({ tree, world }) => {
+export const GrowIntoNeighbors: EntityBehavior = {
+  filter: ({ entity: e }) =>
+    !(e as Tree).isSapling &&
+    ((e as Tree).growth < 4 ||
+      ((e as Tree).growth < 32 && (e as Tree).roots > 3)),
+  action: ({ entity: e, world }) => {
     const { min, max } = world;
+    const tree = e as Tree;
     const { origin, growth } = tree;
     let ncoords: XY[] = [];
     if (growth > 8) {

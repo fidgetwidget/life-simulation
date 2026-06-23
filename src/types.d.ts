@@ -13,19 +13,19 @@ type ChangeData = {
   v: number;
 };
 
-type WorldBehaviourFilterProps = {
+type WorldBehaviorFilterProps = {
   qworld: QWorld;
   chunk: Chunk;
   values: number[];
   counts: Record<Elements, number>;
 };
 
-type WorldBehaviourActionProps = {
+type WorldBehaviorActionProps = {
   qworld: QWorld;
   chunk: Chunk;
 };
 
-type WorldBehaviour = {
-  filter: (props: WorldBehaviourFilterProps) => boolean;
-  action: (props: WorldBehaviourActionProps) => void;
+type WorldBehavior = {
+  filter: (props: WorldBehaviorFilterProps) => boolean;
+  action: (props: WorldBehaviorActionProps) => void;
 };
