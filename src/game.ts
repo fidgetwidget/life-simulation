@@ -7,7 +7,12 @@ import {
   MAX_CHANGE_PER_TICK,
 } from '@/const.ts';
 import { HoverUI } from '@/debug/HoverUI.ts';
-import { Elements, MOTE_COLOR_MAP } from '@/elements.ts';
+import {
+  // BIOME_COLOR_MAP,
+  Elements,
+  // getBiome,
+  MOTE_COLOR_MAP,
+} from '@/elements.ts';
 // import { Logger } from "@/lib/Logger.ts";
 import { QWorld } from '@/simulation';
 import { Simulation } from '@/simulation/simulation.ts';
@@ -15,7 +20,15 @@ import { normalize, XY } from '@/util';
 
 import { River } from './simulation/entity/river';
 import { Tree } from './simulation/entity/tree';
-import { perlin2, seed } from './util/noise';
+import {
+  perlin2,
+  seedNoise,
+  // simplex2,
+  // fmp,
+  scattered,
+  blue,
+  // ampFreqNoise,
+} from './util/noise';
 import { rng } from './util/Random';
 
 // const NOISE_VALUE_FILTERS = [
@@ -77,15 +90,16 @@ export class Game {
   }
 
   init() {
-    this.attachEventListeners();
-    this.initTrees();
-    this.initRiver();
+    this.renderNoise();
 
-    this.initPaint();
-    this.renderQuads();
+    // this.attachEventListeners();
+    // this.initTrees();
+    // this.initRiver();
 
-    this.flushRender();
-    // this.renderNoise();
+    // this.initPaint();
+    // this.renderQuads();
+
+    // this.flushRender();
   }
 
   initTrees() {
@@ -182,21 +196,39 @@ export class Game {
 
   renderNoise() {
     const { min, max } = this.qWorld;
-    const res = { x: TILE_SIZE, y: TILE_SIZE };
-    const values = [];
-    const n = seed(rng.next());
+    const count = max.x * max.y;
+    const blueValues = [];
+    const elevation = [];
+    const moisture = [];
+    const n = seedNoise(rng.next());
+    // const amps = [1, 0.5, 0.25];
+    // const freqs = [1, 2, 4];
     for (let x = min.x; x < max.x; x++) {
       for (let y = min.y; y < max.y; y++) {
-        const v = perlin2(x / res.x, y / res.y, n);
-        values.push({ x, y, v });
+        blueValues.push({ x, y, v: blue(x, y, n) });
+        elevation.push({
+          x,
+          y,
+          v: 5 * perlin2(x * 0.333, y * 0.333, n) ** 2,
+        });
+        moisture.push({ v: scattered(x, y, n) });
       }
     }
-    values.forEach(({ x, y, v }) => {
-      const cval = v * 255;
-      this.ctx.fillStyle = `rgb(${cval}, ${cval}, ${cval})`;
+    for (let i = 0; i < count; i++) {
+      const { x, y, v: el } = elevation[i];
+      // const { v: mo } = moisture[i];
+      // const b = getBiome(el ** 2, mo, 0);
+      this.ctx.fillStyle = `rgb(${el * 255}, ${el * 255}, ${el * 255})`;
+      // this.ctx.fillStyle = BIOME_COLOR_MAP[b];
       this.ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    }
+    blueValues.forEach(({ x, y, v }) => {
+      if (v > 0.49 && v < 0.51) {
+        v = 0.5;
+        this.ctx.fillStyle = `rgb(255, 0, 0)`;
+        this.ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+      }
     });
-    console.log(values);
   }
 
   flushRender() {

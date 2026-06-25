@@ -1,7 +1,7 @@
-import { seed, F2, G2 } from './noise';
+import { seedNoise, F2, G2 } from './noise';
 import { dot2 } from './vec3';
 
-export function simplex2(x: number, y: number, { perm, gradP } = seed(0)) {
+export function simplex2(x: number, y: number, { perm, gradP } = seedNoise(0)) {
   let n0, n1, n2; // Noise contributions from the three corners
   // Skew the input space to determine which simplex cell we're in
   const s = (x + y) * F2; // Hairy factor for 2D

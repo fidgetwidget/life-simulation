@@ -1,4 +1,4 @@
-import { seed } from './noise';
+import { seedNoise } from './noise';
 import { dot2 } from './vec3';
 
 function fade(t: number): number {
@@ -9,7 +9,8 @@ function lerp(a: number, b: number, t: number): number {
   return (1 - t) * a + t * b;
 }
 
-export function perlin2(x: number, y: number, { perm, gradP } = seed(0)) {
+// NOTE: look at http://devmag.org.za/2009/04/25/perlin-noise/ to improve readability.
+export function perlin2(x: number, y: number, { perm, gradP } = seedNoise(0)) {
   // Find unit grid cell containing point
   let X = Math.floor(x),
     Y = Math.floor(y);

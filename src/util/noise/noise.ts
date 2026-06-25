@@ -41,9 +41,10 @@ export const G2 = (3 - Math.sqrt(3)) / 6;
 export const F3 = 1 / 3;
 export const G3 = 1 / 6;
 
-const cache: Record<number, { perm: Uint8Array; gradP: Vec3[] }> = {};
+export type SeededNoise = { perm: Uint8Array; gradP: Vec3[] };
+const cache: Record<number, SeededNoise> = {};
 
-export function seed(seed: number) {
+export function seedNoise(seed: number) {
   if (seed > 0 && seed < 1) {
     // Scale the seed out
     seed *= 65536;
